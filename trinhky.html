@@ -1,0 +1,1025 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>window.KV_BUILD = "15/10/2026 17:11";</script>
+<script>document.write('<script src="config.js?t=' + Date.now() + '"><\/script>');</script>
+<title>ABG – Trình ký</title>
+<style>
+:root{
+  --brand:#16365c; --brand-soft:#e5edf6; --accent:#e07a2e; --accent-soft:#fdecdf;
+  --bg:#f5f3ee; --card:#ffffff; --text:#1d2a2b; --muted:#5f6b6c; --line:#e2ded5;
+  --danger:#c0392b; --danger-soft:#fbe5e2; --ok:#2e7d4f; --ok-soft:#e2f3e8; --warn:#9a5b00; --radius:14px;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);font-size:16px;line-height:1.45;overflow-x:hidden}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:var(--brand)}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.hidden{display:none!important}
+.wrap{max-width:860px;margin:0 auto;padding:0 16px}
+
+/* Đăng nhập */
+.center{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 16px}
+.login-card{background:var(--card);border-radius:20px;padding:28px 22px;width:100%;max-width:400px;box-shadow:0 10px 30px rgba(22,54,92,.12)}
+.brand{font-weight:800;letter-spacing:.08em;color:var(--brand);font-size:22px}
+.brand small{display:block;font-weight:500;letter-spacing:0;color:var(--muted);font-size:14px;margin-top:2px}
+label{display:block;font-weight:600;font-size:14px;margin:14px 0 6px}
+.input{width:100%;min-height:48px;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;background:#fff;min-width:0}
+textarea.input{min-height:84px;resize:vertical}
+.input:focus{border-color:var(--brand);outline:none}
+.input[readonly]{background:#f1efe9;color:var(--muted)}
+.pw{display:flex;gap:6px}
+.pw .input{flex:1}
+.pw .eye{flex:none;width:52px;min-height:48px;border-radius:10px;border:1.5px solid var(--line);background:#fff;font-size:18px}
+
+/* Nút */
+.btn{min-height:48px;padding:10px 16px;border-radius:12px;border:1.5px solid var(--line);background:#fff;font-weight:600}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn.accent{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.btn.red{background:var(--danger);border-color:var(--danger);color:#fff}
+.btn.danger{color:var(--danger);border-color:#efc9c4}
+.btn.armed{background:var(--danger);border-color:var(--danger);color:#fff;animation:pulse 1s ease-in-out infinite}
+@keyframes pulse{50%{box-shadow:0 0 0 5px rgba(192,57,43,.25)}}
+.btn.block{width:100%}
+.btn.sm{min-height:40px;padding:6px 12px;font-size:14px}
+.btn:disabled{opacity:.55}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.btn-row .btn{flex:1 1 140px}
+.sign-btns{display:grid;grid-template-columns:1fr;gap:10px;margin-top:14px}
+.sign-btns .btn{min-height:56px;font-size:17px}
+@media(min-width:560px){.sign-btns{grid-template-columns:1.3fr 1fr 1fr}}
+
+/* Đầu trang */
+header{background:var(--brand);color:#fff;position:sticky;top:0;z-index:5}
+.hdr{display:flex;align-items:center;gap:8px;padding:10px 16px;max-width:860px;margin:0 auto}
+.hdr .who{flex:1;min-width:0}
+.hdr .who b{display:block;font-size:17px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr .who span{font-size:13px;opacity:.85}
+.icon-btn{min-width:44px;min-height:44px;border-radius:10px;border:1px solid rgba(255,255,255,.35);background:transparent;color:#fff;font-size:14px;padding:0 10px;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;white-space:nowrap}
+.legal{font-size:12.5px;color:var(--muted);background:#fff;border:1px dashed var(--line);border-radius:10px;padding:8px 12px;margin:12px 0 0}
+
+/* Mục */
+.tabs{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:8px;margin:12px 0}
+.tab{min-height:50px;border-radius:12px;border:1.5px solid var(--line);background:#fff;font-weight:600;padding:6px 8px;display:flex;align-items:center;justify-content:center;gap:6px;text-align:center}
+.tab.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+.tab.new{border-color:var(--brand);color:var(--brand)}
+.tab.new.on{color:#fff}
+.badge{display:inline-block;min-width:24px;padding:1px 7px;border-radius:999px;background:#eceae6;color:var(--text);font-size:13px;font-weight:800}
+.badge.hot{background:var(--accent);color:#fff}
+.tab.on .badge{background:rgba(255,255,255,.25);color:#fff}
+.tab.on .badge.hot{background:var(--accent)}
+
+/* Danh sách */
+.toolbar{display:flex;gap:8px;margin-bottom:10px}
+.toolbar .input{flex:1}
+.toolbar .btn{flex:none}
+.counts{display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:10px}
+.cnt{background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:8px 2px;text-align:center;min-height:56px}
+.cnt b{display:block;font-size:20px}
+.cnt span{font-size:11.5px;color:var(--muted)}
+.cnt.on{border-color:var(--brand);background:var(--brand-soft)}
+.cnt.c-over b{color:var(--danger)}
+.filterbar{display:flex;flex-wrap:wrap;align-items:center;gap:8px;background:var(--accent-soft);border-radius:10px;padding:8px 12px;margin-bottom:10px;font-size:14px}
+.filterbar span{flex:1 1 200px}
+.filters{display:grid;grid-template-columns:1fr 1fr;gap:4px 10px}
+.filters .full{grid-column:1/-1}
+.chk{display:flex;flex-wrap:wrap;gap:6px}
+.chk label{margin:0;display:flex;align-items:center;gap:6px;min-height:42px;padding:4px 12px;border:1.5px solid var(--line);border-radius:999px;background:#fff;font-weight:500}
+.chk input{width:20px;height:20px;accent-color:var(--brand)}
+.list{display:flex;flex-direction:column;gap:10px;padding-bottom:20px}
+.card{background:var(--card);border:1.5px solid var(--line);border-radius:var(--radius);padding:14px;text-align:left;width:100%}
+.card.urgent{border-left:6px solid var(--danger)}
+.card .top{display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:13px;color:var(--muted)}
+.card h3{margin:6px 0 4px;font-size:17px;overflow-wrap:anywhere}
+.meta{font-size:13.5px;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 12px}
+.pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:700;white-space:nowrap}
+.s-draft{background:#eceae6;color:#555}
+.s-wait{background:#e6f0fa;color:#2b6cb0}
+.s-fix{background:#fdf1dc;color:var(--warn)}
+.s-rej{background:var(--danger-soft);color:var(--danger)}
+.s-done{background:var(--ok-soft);color:var(--ok)}
+.s-wd{background:#eceae6;color:#777}
+.khan{background:var(--danger);color:#fff}
+.over{color:var(--danger);font-weight:700}
+.soon{color:var(--warn);font-weight:700}
+.empty{text-align:center;color:var(--muted);padding:36px 10px}
+
+/* Hộp & chi tiết */
+.box{background:var(--card);border:1.5px solid var(--line);border-radius:var(--radius);padding:14px;margin-top:12px}
+.box h4{margin:0 0 8px;font-size:15.5px}
+.box.sign{border:2px solid var(--brand);background:#fbfdfd}
+.box.warnbox{border-color:#efc9c4}
+.kv{display:grid;grid-template-columns:112px 1fr;gap:6px 10px;font-size:14px;margin:0}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0;overflow-wrap:anywhere}
+.pre{white-space:pre-wrap;font-size:14px;overflow-wrap:anywhere}
+.hint{font-size:12.5px;color:var(--muted);margin-top:6px}
+.mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;overflow-wrap:anywhere}
+details>summary{cursor:pointer;font-weight:700;min-height:44px;display:flex;align-items:center;list-style:none}
+details>summary::before{content:'▸';margin-right:8px;color:var(--muted)}
+details[open]>summary::before{content:'▾'}
+.log{font-size:13px;border-left:3px solid var(--line);padding-left:10px;margin:8px 0;overflow-wrap:anywhere}
+
+/* Tiến trình bước ký */
+.steps{list-style:none;margin:0;padding:0}
+.steps li{display:flex;gap:12px;padding:10px 0;border-top:1px solid var(--line)}
+.steps li:first-child{border-top:0}
+.ico{flex:none;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;background:#eceae6;color:#777}
+.ico.done{background:var(--ok);color:#fff}
+.ico.wait{background:var(--brand);color:#fff;box-shadow:0 0 0 4px var(--brand-soft)}
+.ico.rej{background:var(--danger);color:#fff}
+.ico.fix{background:var(--accent);color:#fff}
+.ico.skip,.ico.void{background:#eceae6;color:#999}
+.steps .body{flex:1;min-width:0;font-size:14px}
+.steps .body b{font-size:15px}
+.steps .sub{color:var(--muted);font-size:13px}
+.steps .cmt{background:#f6f4ef;border-radius:8px;padding:6px 10px;margin-top:4px;font-size:13.5px;overflow-wrap:anywhere}
+.lock{font-size:12.5px;color:var(--muted);display:flex;align-items:center;gap:6px;margin-bottom:6px}
+
+/* Tệp */
+.files{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.file-row{display:flex;align-items:center;gap:10px;width:100%;min-height:48px;padding:8px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--card);text-align:left}
+.file-row .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file-row .sz{flex:none;font-size:13px;color:var(--muted)}
+.file-row .rm{flex:none;min-width:40px;min-height:40px;border-radius:50%;border:0;background:transparent;color:var(--danger);font-size:20px}
+.file-pick{border-style:dashed;color:var(--muted)}
+
+/* Người (thẻ tên) */
+.chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.chip{display:inline-flex;align-items:center;gap:4px;padding:4px 4px 4px 12px;min-height:40px;border-radius:999px;background:var(--brand-soft);font-size:14px;max-width:100%}
+.chip span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chip.def{background:#eceae6}
+.chip button{min-width:34px;min-height:34px;border:0;border-radius:50%;background:transparent;font-size:18px;color:var(--muted)}
+.chip .tag{font-size:11px;color:var(--muted);margin-left:2px}
+.chip:not(:has(button)){padding-right:12px}
+.people{display:flex;flex-direction:column;gap:6px;max-height:50vh;overflow:auto;margin-top:10px}
+.person{display:flex;align-items:center;gap:12px;min-height:52px;padding:8px 12px;border:1.5px solid var(--line);border-radius:10px;background:#fff;text-align:left;width:100%}
+.person.on{border-color:var(--brand);background:var(--brand-soft)}
+.person .ck{flex:none;width:26px;height:26px;border-radius:6px;border:2px solid var(--line);display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff}
+.person.on .ck{background:var(--brand);border-color:var(--brand)}
+.person small{display:block;color:var(--muted)}
+.seg{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.seg button{min-height:48px;border-radius:10px;border:1.5px solid var(--line);background:#fff;font-weight:600}
+.seg button.on{background:var(--brand);border-color:var(--brand);color:#fff}
+.seg button.on.k{background:var(--danger);border-color:var(--danger)}
+
+/* Luồng ký (QTV) */
+.flow{border-top:1px solid var(--line);padding:12px 0}
+.flow:first-child{border-top:0}
+.flow.off{opacity:.6}
+.flow .steps-line{font-size:13.5px;color:var(--muted);margin-top:4px;overflow-wrap:anywhere}
+.fstep{border:1.5px solid var(--line);border-radius:12px;padding:10px;margin-top:10px;background:#fff}
+.fstep .row{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.fstep .row3{display:grid;grid-template-columns:minmax(56px,90px) minmax(84px,1fr) 44px 44px 44px;gap:6px;margin-top:8px;align-items:center}
+.fstep .row3 .input{padding:10px 6px}
+.fstep .num{font-weight:800;color:var(--brand)}
+.mini{min-width:44px;min-height:44px;border-radius:10px;border:1.5px solid var(--line);background:#fff;font-size:16px}
+.type-row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 0;border-top:1px solid var(--line)}
+.type-row:first-child{border-top:0}
+.type-row.off b{color:var(--muted);text-decoration:line-through}
+
+/* Lớp phủ */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:20;display:flex;align-items:flex-end;justify-content:center}
+#picker{z-index:25}
+.sheet{background:var(--bg);width:100%;max-width:720px;max-height:92vh;overflow:auto;border-radius:20px 20px 0 0;padding:18px 16px 28px}
+@media(min-width:760px){.overlay{align-items:center}.sheet{border-radius:20px}}
+.sheet-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.sheet-head h2{margin:4px 0 0;font-size:20px;overflow-wrap:anywhere}
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#1d2a2b;color:#fff;padding:12px 18px;border-radius:12px;z-index:40;max-width:92vw;font-size:15px}
+#toast.err{background:var(--danger)}
+#toast.ok{background:var(--ok)}
+#busy{position:fixed;inset:0;background:rgba(245,243,238,.6);z-index:30;display:flex;flex-direction:column;gap:14px;align-items:center;justify-content:center}
+#busy-text{font-weight:600;text-align:center;max-width:90vw;overflow-wrap:anywhere}
+.spin{width:42px;height:42px;border:4px solid var(--brand-soft);border-top-color:var(--brand);border-radius:50%;animation:sp .8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+#lightbox{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:35;display:flex;align-items:center;justify-content:center;padding:16px}
+#lightbox img{max-width:100%;max-height:100%;border-radius:8px}
+@media(max-width:420px){.lbl{display:none}.kv{grid-template-columns:96px 1fr}.cnt b{font-size:18px}.hdr{gap:6px;padding:10px 12px}.icon-btn{padding:0 8px}}
+
+/* Phiếu xác nhận để in */
+.receipt{background:#fff;color:#000;padding:18px;border:1px solid #ccc;border-radius:8px;font-size:14px}
+.receipt h1{font-size:19px;text-align:center;margin:6px 0 12px}
+.receipt table{width:100%;border-collapse:collapse;margin:8px 0}
+.receipt td,.receipt th{border:1px solid #bbb;padding:5px 7px;text-align:left;vertical-align:top;overflow-wrap:anywhere}
+.receipt th{background:#f2f2f2}
+@media print{
+  body *{visibility:hidden}
+  #receipt-print,#receipt-print *{visibility:visible}
+  #receipt-print{position:absolute;left:0;top:0;width:100%;border:0}
+}
+</style>
+</head>
+<body>
+
+<!-- ĐĂNG NHẬP -->
+<section id="login" class="center hidden">
+  <form class="login-card" onsubmit="doLogin(event)">
+    <div class="brand">TẬP ĐOÀN ABG<small>Trình ký văn bản nội bộ – Tập đoàn ABG</small></div>
+    <label for="l-email">Email</label>
+    <input id="l-email" class="input" type="email" autocomplete="username" required>
+    <label for="l-pw">Mật khẩu</label>
+    <div class="pw"><input id="l-pw" class="input" type="password" autocomplete="current-password" required><button type="button" class="eye" onclick="eye('l-pw',this)" aria-label="Hiện mật khẩu">👁</button></div>
+    <div class="btn-row"><button class="btn primary block" type="submit">Đăng nhập</button></div>
+    <p class="hint" style="font-size:13px">Quên mật khẩu? Liên hệ Quản trị viên để được cấp mật khẩu tạm.<br>Dùng chung tài khoản với ứng dụng Giao việc.</p>
+    <p id="conn-status" class="hint"></p>
+  </form>
+</section>
+
+<!-- ĐẶT MẬT KHẨU MỚI (sau khi đăng nhập bằng mật khẩu tạm) -->
+<section id="setpw" class="center hidden">
+  <form class="login-card" onsubmit="doSetPw(event)">
+    <div class="brand">ĐẶT MẬT KHẨU MỚI<small>Bạn vừa đăng nhập bằng mật khẩu tạm. Hãy đặt mật khẩu riêng để tiếp tục.</small></div>
+    <label for="s-new">Mật khẩu mới</label>
+    <div class="pw"><input id="s-new" class="input" type="password" autocomplete="new-password" required minlength="8"><button type="button" class="eye" onclick="eye('s-new',this)" aria-label="Hiện mật khẩu">👁</button></div>
+    <label for="s-new2">Nhập lại mật khẩu mới</label>
+    <div class="pw"><input id="s-new2" class="input" type="password" autocomplete="new-password" required minlength="8"><button type="button" class="eye" onclick="eye('s-new2',this)" aria-label="Hiện mật khẩu">👁</button></div>
+    <p class="hint">Tối thiểu 8 ký tự, có cả chữ và số, không trùng email. Phân biệt chữ hoa, chữ thường. Dùng mật khẩu này cho cả đăng nhập và ký duyệt.</p>
+    <div class="btn-row"><button class="btn primary block" type="submit">Lưu mật khẩu &amp; vào ứng dụng</button></div>
+    <div class="btn-row"><button class="btn block" type="button" onclick="doLogout()">Thoát</button></div>
+  </form>
+</section>
+
+<!-- ỨNG DỤNG -->
+<section id="app" class="hidden">
+  <header>
+    <div class="hdr">
+      <div class="who"><b id="u-name"></b><span id="u-role"></span></div>
+      <button class="icon-btn" onclick="reload(true)" aria-label="Tải lại">⟳</button>
+      <a class="icon-btn" id="to-gv" href="index.html#giaoviec" aria-label="Sang ứng dụng Giao việc">📋<span class="lbl"> Giao việc</span></a>
+      <button class="icon-btn" onclick="openChangePw()" aria-label="Đổi mật khẩu">🔑</button>
+      <button class="icon-btn" onclick="doLogout()">Thoát</button>
+    </div>
+  </header>
+  <main class="wrap">
+    <p class="legal">⚖️ Phê duyệt <b>nội bộ</b> có ghi vết, <b>không phải chữ ký số</b> theo Luật Giao dịch điện tử. Văn bản cần giá trị pháp lý với bên ngoài vẫn ký tay, đóng dấu hoặc dùng chữ ký số của tổ chức CA.</p>
+    <nav class="tabs" id="tabs"></nav>
+
+    <div id="view-list">
+      <div id="l-counts"></div>
+      <div class="toolbar">
+        <input id="l-q" class="input" type="search" placeholder="Tìm theo mã, tiêu đề, người trình…" onkeydown="if(event.key==='Enter'){S.filter.q=this.value;loadList()}">
+        <button class="btn" onclick="toggleFilter()" id="btn-filter">🔍 Lọc</button>
+      </div>
+      <div id="l-filter" class="box hidden" style="margin:0 0 10px"></div>
+      <div id="l-filterbar"></div>
+      <div class="list" id="list"></div>
+    </div>
+
+    <div id="view-new" class="hidden"></div>
+    <div id="view-flows" class="hidden"></div>
+    <div id="view-types" class="hidden"></div>
+    <div style="height:40px"></div>
+  </main>
+</section>
+
+<div id="sheet" class="overlay hidden" onclick="if(event.target===this)closeSheet()"><div class="sheet" role="dialog" aria-modal="true" id="sheet-body"></div></div>
+<div id="picker" class="overlay hidden" onclick="if(event.target===this)closePicker()"><div class="sheet" role="dialog" aria-modal="true" id="picker-body"></div></div>
+<div id="lightbox" class="hidden" onclick="this.classList.add('hidden')"><img id="lightbox-img" alt="Ảnh phụ lục"></div>
+<div id="busy" class="hidden"><div class="spin"></div><div id="busy-text" role="status" aria-live="polite"></div></div>
+<div id="toast" class="hidden" role="status" aria-live="polite"></div>
+
+<script>if(!String(window.KV_API_URL||'').trim())document.write('<script src="core.js?v=202610151711"><\/script><script src="demo-trinhky.js?v=202610151711"><\/script>');</script>
+<script>
+const S = { token:null, boot:null, view:'toSign', filter:{}, showFilter:false, list:null, cur:null, detail:null, form:null, fe:null, flows:null };
+const $ = id => document.getElementById(id);
+const ST_CLASS = {'Nháp':'s-draft','Chờ ký':'s-wait','Bổ sung':'s-fix','Từ chối':'s-rej','Hoàn tất':'s-done','Thu hồi':'s-wd'};
+const BOXES = {toSign:'✍ Chờ tôi ký', mine:'📤 Tôi đã trình', watch:'👁 Tôi theo dõi', dept:'🏢 Bộ phận'};
+const TOKEN_KEY = () => window.KV_TOKEN_KEY || 'abg_token';
+
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function store(k,v){ try{ v==null?localStorage.removeItem(k):localStorage.setItem(k,v);}catch(e){} }
+function recall(k){ try{ return localStorage.getItem(k);}catch(e){ return null; } }
+const z = n => String(n).padStart(2,'0');
+function vn(ms){ const d=new Date(Number(ms)+7*3600e3); return {y:d.getUTCFullYear(),m:d.getUTCMonth()+1,d:d.getUTCDate(),h:d.getUTCHours(),mi:d.getUTCMinutes(),dow:d.getUTCDay()}; }
+function fmtT(ms){ if(!ms) return ''; const p=vn(ms); return ['CN','T2','T3','T4','T5','T6','T7'][p.dow]+' '+z(p.d)+'/'+z(p.m)+' '+z(p.h)+':'+z(p.mi); }
+function fmtD(ms){ if(!ms) return ''; const p=vn(ms); return z(p.d)+'/'+z(p.m)+'/'+p.y; }
+function fmtYmd(s){ const m=String(s||'').match(/^(\d{4})-(\d{2})-(\d{2})/); return m?`${m[3]}/${m[2]}/${m[1]}`:''; }
+function dur(ms){ ms=Math.abs(ms); const mi=Math.round(ms/6e4); if(mi<60) return mi+' phút'; const h=Math.round(ms/36e5); if(h<48) return h+' giờ'; const d=Math.floor(h/24),r=h%24; return d+' ngày'+(r?' '+r+' giờ':''); }
+const money = n => n ? String(Math.round(Number(n))).replace(/\B(?=(\d{3})+(?!\d))/g,'.')+' đ' : '';
+const mb = b => (b/1048576).toFixed(b<1048576?2:1)+'MB';
+function leftHtml(ms){ if(ms==null) return ''; return ms<0?`<span class="over">⏰ Quá hạn ${dur(ms)}</span>`:(ms<4*36e5?`<span class="soon">⏳ Còn ${dur(ms)}</span>`:`⏳ Còn ${dur(ms)}`); }
+function pill(st){ return `<span class="pill ${ST_CLASS[st]||''}">${esc(st)}</span>`; }
+
+/* ---------- Gọi máy chủ: link /exec (google.script.run) hoặc GitHub Pages (fetch → doPost) ---------- */
+async function call(fn, ...args){
+  if(window.KV_API_URL){
+    let res;
+    try{ res=await fetch(window.KV_API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({fn,args})}); }
+    catch(e){ throw new Error('Không kết nối được máy chủ Google. Kiểm tra mạng rồi thử lại.'); }
+    let j;
+    try{ j=await res.json(); }catch(e){ throw new Error('Máy chủ trả về dữ liệu lỗi. Kiểm tra lại link API (KV_API_URL), quyền truy cập "Bất kỳ ai" và đã Triển khai phiên bản mới.'); }
+    if(!j.ok) throw new Error(j.error||'Lỗi không xác định');
+    return j.data;
+  }
+  return new Promise((res,rej)=>{ google.script.run.withSuccessHandler(res).withFailureHandler(rej)[fn](...args); });
+}
+const tk = (fn,...args) => call('tkApi', fn, S.token, args);
+
+function busy(on,text){ $('busy').classList.toggle('hidden',!on); $('busy-text').textContent=on&&text?text:''; }
+let toastTimer;
+function toast(msg,type){ const t=$('toast'); t.textContent=msg; t.className=type||''; clearTimeout(toastTimer); toastTimer=setTimeout(()=>t.className='hidden',type==='err'?5000:3200); }
+function handleErr(e){
+  const msg=(e&&e.message)||String(e);
+  if(msg.indexOf('SESSION_EXPIRED')>-1){ toast('Phiên đăng nhập đã hết, vui lòng đăng nhập lại','err'); return showLogin(); }
+  if(msg.indexOf('MUST_CHANGE_PASSWORD')>-1) return showSetPw();
+  if(/Không tìm thấy hàm|tkApi|Chức năng không hợp lệ/.test(msg)) return toast('Máy chủ chưa có module Trình ký: dán TrinhKyCore.gs, TrinhKyServer.gs, TrinhKy.html vào Apps Script, chạy setup và Triển khai phiên bản mới.','err');
+  toast(msg.replace(/^Error:\s*/,''),'err');
+}
+function eye(id,btn){ const i=$(id); i.type=i.type==='password'?'text':'password'; btn.textContent=i.type==='password'?'👁':'🙈'; btn.setAttribute('aria-label',i.type==='password'?'Hiện mật khẩu':'Ẩn mật khẩu'); }
+// Nút xác nhận 2 lần (không dùng confirm)
+function twice(btn, fn){
+  if(btn.dataset.armed){ delete btn.dataset.armed; btn.classList.remove('armed'); btn.textContent=btn.dataset.label; return fn(); }
+  btn.dataset.label=btn.textContent; btn.dataset.armed='1'; btn.classList.add('armed'); btn.textContent='Bấm lần nữa để xác nhận';
+  setTimeout(()=>{ if(btn.dataset.armed){ delete btn.dataset.armed; btn.classList.remove('armed'); btn.textContent=btn.dataset.label; } },6000);
+}
+
+/* ---------- Đăng nhập & mật khẩu ---------- */
+function showOnly(id){ ['login','setpw','app'].forEach(x=>$(x).classList.toggle('hidden',x!==id)); }
+function showLogin(){ S.token=null; S.view='toSign'; S.cur=null; store(TOKEN_KEY(),null); store(CACHE_KEY,null); closeSheet(); closePicker(); showOnly('login'); const em=recall('abg_email'); if(em&&!$('l-email').value) $('l-email').value=em; }
+function showSetPw(){ closeSheet(); showOnly('setpw'); $('s-new').value=''; $('s-new2').value=''; }
+async function doLogin(e){
+  e.preventDefault(); busy(true);
+  try{
+    const email=$('l-email').value.trim();
+    const r=await call('login', email, $('l-pw').value);
+    S.token=r.token; store(TOKEN_KEY(),r.token); store('abg_email',email); $('l-pw').value='';
+    if(r.mustChange) return showSetPw();
+    await start();
+  }catch(err){ handleErr(err); } finally{ busy(false); }
+}
+function pwProblem(pw,email){
+  if(pw.length<8) return 'Mật khẩu cần tối thiểu 8 ký tự.';
+  if(!/[A-Za-zÀ-ỹ]/.test(pw)||!/\d/.test(pw)) return 'Mật khẩu cần có cả chữ và số.';
+  const e=String(email||'').toLowerCase(); if(e&&(pw.toLowerCase()===e||pw.toLowerCase()===e.split('@')[0])) return 'Mật khẩu không được trùng email.';
+  return '';
+}
+async function doSetPw(e){
+  e.preventDefault();
+  const a=$('s-new').value.trim(), b=$('s-new2').value.trim();
+  const bad=pwProblem(a, recall('abg_email')); if(bad) return toast(bad,'err');
+  if(a!==b) return toast('Hai lần nhập mật khẩu không khớp','err');
+  busy(true);
+  try{ await call('changePassword', S.token, '', a); toast('Đã đặt mật khẩu mới','ok'); await start(); }
+  catch(err){ handleErr(err); } finally{ busy(false); }
+}
+function openChangePw(){
+  openSheet(`<div class="sheet-head"><h2>🔑 Đổi mật khẩu</h2><button class="btn" onclick="closeSheet()" aria-label="Đóng">✕</button></div>
+    <form class="box" onsubmit="doChangePw(event)">
+      <label for="c-old">Mật khẩu hiện tại</label>
+      <div class="pw"><input id="c-old" class="input" type="password" autocomplete="current-password" required><button type="button" class="eye" onclick="eye('c-old',this)" aria-label="Hiện mật khẩu">👁</button></div>
+      <label for="c-new">Mật khẩu mới</label>
+      <div class="pw"><input id="c-new" class="input" type="password" autocomplete="new-password" required><button type="button" class="eye" onclick="eye('c-new',this)" aria-label="Hiện mật khẩu">👁</button></div>
+      <label for="c-new2">Nhập lại mật khẩu mới</label>
+      <div class="pw"><input id="c-new2" class="input" type="password" autocomplete="new-password" required><button type="button" class="eye" onclick="eye('c-new2',this)" aria-label="Hiện mật khẩu">👁</button></div>
+      <p class="hint">Tối thiểu 8 ký tự, có chữ và số. Mật khẩu dùng chung cho Giao việc và Trình ký.</p>
+      <div class="btn-row"><button class="btn primary block" type="submit">Lưu mật khẩu mới</button></div>
+    </form>`);
+}
+async function doChangePw(e){
+  e.preventDefault();
+  const a=$('c-new').value.trim(), b=$('c-new2').value.trim();
+  const bad=pwProblem(a, S.boot.user.email); if(bad) return toast(bad,'err');
+  if(a!==b) return toast('Hai lần nhập mật khẩu không khớp','err');
+  busy(true);
+  try{ await call('changePassword', S.token, $('c-old').value, a); closeSheet(); toast('Đã đổi mật khẩu','ok'); }
+  catch(err){ handleErr(err); } finally{ busy(false); }
+}
+async function doLogout(){ const t=S.token; showLogin(); if(t) call('logout',t).catch(()=>{}); }
+
+/* ---------- Gọi gộp: 1 lượt máy chủ cho cả thao tác + số đếm + chi tiết + danh sách ---------- */
+const CACHE_KEY='kv_tkcache';
+async function tkRun(first, opts){
+  opts=opts||{};
+  const calls=[]; if(first) calls.push(first);
+  calls.push(['bootstrap',[]]);
+  if(opts.detail) calls.push(['get',[opts.detail]]);
+  const wantList = !!BOXES[S.view] && opts.list!==false;
+  if(wantList) calls.push(['list',[S.view,S.filter,0]]);
+  const res=await tk('multi', ...calls);
+  let i=0; const out = first ? res[i++] : null;
+  S.boot=res[i++];
+  if(opts.detail){ S.detail=res[i++]; S.cur=opts.detail; }
+  if(wantList) S.list=res[i++];
+  if(wantList) store(CACHE_KEY, JSON.stringify({token:S.token, view:S.view, boot:S.boot, list:S.list}));
+  return out;
+}
+function paintHeader(){
+  const u=S.boot.user;
+  $('u-name').textContent=u.name; $('u-role').textContent=u.role+(u.dept?' · '+u.dept:'');
+  $('to-gv').href = window.KV_API_URL||window.KV_DEMO ? 'index.html#giaoviec' : (S.boot.appUrl||'index.html#giaoviec');
+}
+
+/* ---------- Khởi động ---------- */
+async function start(){
+  // Hiện ngay dữ liệu lần trước (nếu có) trong lúc chờ máy chủ
+  let cached=null; try{ cached=JSON.parse(recall(CACHE_KEY)||'null'); }catch(e){}
+  if(cached && cached.token===S.token && cached.boot && cached.list){
+    S.boot=cached.boot; S.list=cached.list; S.view=cached.view||'toSign';
+    showOnly('app'); paintHeader(); renderTabs(); $('view-list').classList.remove('hidden'); renderList(); busy(false);
+  }
+  if(!BOXES[S.view]) S.view='toSign';
+  await tkRun(null,{});
+  const u=S.boot.user;
+  showOnly('app'); paintHeader();
+  if(S.view==='dept'&&!u.isManager) S.view='toSign';
+  if(S.view==='toSign'&&!S.boot.counts.toSign&&S.boot.counts.needFix){ S.view='mine'; return go('mine',true); }
+  await go(S.view, true, true);
+}
+async function reload(manual){
+  if(manual) busy(true);
+  try{
+    if(BOXES[S.view]||S.cur){ await tkRun(null,{detail:S.cur||null}); renderTabs(); if(BOXES[S.view]) renderList(); if(S.cur) renderDetail(); }
+    else { S.boot=await tk('bootstrap'); await go(S.view,true); }
+    if(manual) toast('Đã cập nhật');
+  }
+  catch(err){ handleErr(err); } finally{ if(manual) busy(false); }
+}
+function renderTabs(){
+  const u=S.boot.user, c=S.boot.counts;
+  const t=(v,label,badge,cls)=>`<button class="tab ${cls||''} ${S.view===v?'on':''}" onclick="go('${v}')" ${S.view===v?'aria-current="page"':''}>${label}${badge!=null?` <span class="badge ${badge.hot?'hot':''}">${badge.n}</span>`:''}</button>`;
+  let h=t('toSign',BOXES.toSign,{n:c.toSign,hot:c.toSign>0})+t('mine',BOXES.mine,c.needFix?{n:'↺ '+c.needFix,hot:true}:null)+t('watch',BOXES.watch);
+  if(u.isManager) h+=t('dept',BOXES.dept);
+  h+=t('new','＋ Trình mới',null,'new');
+  if(u.isAdmin) h+=t('flows','⚙️ Luồng ký')+t('types','🗂 Loại văn bản');
+  $('tabs').innerHTML=h;
+  if(typeof tellShell==='function') tellShell({tk:c.toSign});
+}
+async function go(v, keep, preloaded){
+  if(!keep && v!==S.view){ S.filter={}; S.showFilter=false; $('l-q').value=''; }
+  S.view=v; renderTabs();
+  ['list','new','flows','types'].forEach(x=>$('view-'+x).classList.add('hidden'));
+  if(BOXES[v]){ $('view-list').classList.remove('hidden'); if(preloaded&&S.list&&S.list.box===v) renderList(); else await loadList(); }
+  else if(v==='new'){ $('view-new').classList.remove('hidden'); renderNew(); }
+  else if(v==='flows'||v==='types'){ $('view-'+v).classList.remove('hidden'); await loadFlows(); }
+  if(!keep) window.scrollTo(0,0);
+}
+
+/* ---------- Danh sách ---------- */
+function filterActive(){ const f=S.filter; return !!(f.q||(f.statuses&&f.statuses.length)||f.overdueOnly||f.submitter||f.docType||f.from||f.to||f.dept); }
+async function loadList(more){
+  const off = more ? S.list.items.length : 0;
+  if(more) busy(true,'Đang tải thêm…');
+  try{
+    const r=await tk('list', S.view, S.filter, off);
+    if(more){ r.items=S.list.items.concat(r.items); }
+    S.list=r; renderList();
+  }catch(err){ handleErr(err); } finally{ if(more) busy(false); }
+}
+function renderList(){
+  const L=S.list, f=S.filter, isDept=S.view==='dept';
+  // Thanh số đếm theo trạng thái (mục Bộ phận)
+  if(isDept){
+    const keys=[['Chờ ký','c-wait'],['Bổ sung',''],['Quá hạn','c-over'],['Hoàn tất',''],['Từ chối','']];
+    $('l-counts').innerHTML=`<div class="counts">${keys.map(([k,c])=>{
+      const on = k==='Quá hạn' ? f.overdueOnly&&!(f.statuses||[]).length : (f.statuses||[]).length===1&&f.statuses[0]===k&&!f.overdueOnly;
+      return `<button class="cnt ${c} ${on?'on':''}" onclick="quickCount('${k}')" aria-pressed="${on}"><b>${L.counts[k]||0}</b><span>${k}</span></button>`;
+    }).join('')}</div>`;
+  } else $('l-counts').innerHTML='';
+  $('btn-filter').textContent = S.showFilter ? '✕ Đóng lọc' : '🔍 Lọc';
+  renderFilterPanel();
+  $('l-filterbar').innerHTML = filterActive()
+    ? `<div class="filterbar"><span>Đang lọc: ${esc(filterLabel())} · <b>${L.total}</b> kết quả</span><button class="btn sm" onclick="clearFilter()">Xem toàn bộ (${L.all})</button></div>` : '';
+  if(!L.items.length){
+    const msg={toSign:'Không có tờ trình nào chờ bạn ký. 🎉',mine:'Bạn chưa trình văn bản nào. Bấm "＋ Trình mới" để bắt đầu.',watch:'Bạn chưa theo dõi tờ trình nào.',dept:'Bộ phận chưa có tờ trình nào.'}[S.view];
+    $('list').innerHTML=`<div class="empty">${filterActive()?'Không có tờ trình khớp bộ lọc.':msg}</div>`; return;
+  }
+  $('list').innerHTML=L.items.map(card).join('') + (L.items.length<L.total?`<button class="btn block" onclick="loadList(true)">Xem thêm (${L.total-L.items.length} tờ nữa)</button>`:'');
+}
+function card(x){
+  const step = x.status==='Chờ ký' ? `<span>👤 Bước ${x.curStep}/${x.totalSteps}: ${esc(x.holderName||'')}</span><span>${leftHtml(x.leftMs)}</span>` : '';
+  return `<button class="card ${x.urgency==='Khẩn'?'urgent':''}" onclick="openDetail('${esc(x.id)}')">
+    <div class="top"><span>${esc(x.id)}${x.urgency==='Khẩn'?' · <span class="pill khan">KHẨN</span>':''}</span>${pill(x.status)}</div>
+    <h3>${esc(x.title)}</h3>
+    <div class="meta"><span>✍ ${esc(x.submitterName)} · ${esc(x.dept)}</span><span>📂 ${esc(x.docType)}</span>${x.amount?`<span>💰 ${money(x.amount)}</span>`:''}<span>🗓 ${fmtD(x.createdAt)}</span>${step}</div>
+  </button>`;
+}
+function filterLabel(){
+  const f=S.filter, p=[];
+  if(f.statuses&&f.statuses.length) p.push(f.statuses.join(', '));
+  if(f.overdueOnly) p.push('quá hạn');
+  if(f.docType) p.push(f.docType);
+  if(f.submitter){ const s=(S.list.submitters||[]).find(x=>x.email===f.submitter); p.push('người trình '+(s?s.name:f.submitter)); }
+  if(f.dept) p.push('bộ phận '+f.dept);
+  if(f.from||f.to) p.push((f.from?'từ '+fmtYmd(f.from):'')+(f.to?' đến '+fmtYmd(f.to):''));
+  if(f.q) p.push('"'+f.q+'"');
+  return p.join(' · ');
+}
+function quickCount(k){
+  const f=S.filter;
+  if(k==='Quá hạn'){ const on=f.overdueOnly&&!(f.statuses||[]).length; f.overdueOnly=!on; f.statuses=[]; }
+  else { const on=(f.statuses||[]).length===1&&f.statuses[0]===k&&!f.overdueOnly; f.statuses=on?[]:[k]; f.overdueOnly=false; }
+  loadList();
+}
+function clearFilter(){ S.filter={}; $('l-q').value=''; loadList(); }
+function toggleFilter(){ S.showFilter=!S.showFilter; renderList(); if(S.showFilter) $('l-filter').scrollIntoView({block:'nearest'}); }
+function renderFilterPanel(){
+  const box=$('l-filter'); box.classList.toggle('hidden',!S.showFilter);
+  if(!S.showFilter) return;
+  const f=S.filter, L=S.list, u=S.boot.user, sts=['Chờ ký','Bổ sung','Hoàn tất','Từ chối','Thu hồi'].concat(S.view==='mine'?['Nháp']:[]);
+  box.innerHTML=`<h4>🔍 Lọc tờ trình</h4>
+    <label>Trạng thái (chọn nhiều)</label>
+    <div class="chk">${sts.map(s=>`<label><input type="checkbox" name="fs" value="${esc(s)}" ${(f.statuses||[]).indexOf(s)>=0?'checked':''}>${esc(s)}</label>`).join('')}
+      <label><input type="checkbox" id="fo" ${f.overdueOnly?'checked':''}>Chỉ tờ quá hạn</label></div>
+    <div class="filters">
+      ${S.view!=='mine'?`<div><label for="fsub">Người trình</label><select id="fsub" class="input"><option value="">Tất cả</option>${(L.submitters||[]).map(s=>`<option value="${esc(s.email)}" ${f.submitter===s.email?'selected':''}>${esc(s.name)}</option>`).join('')}</select></div>`:''}
+      <div><label for="ftype">Loại văn bản</label><select id="ftype" class="input"><option value="">Tất cả</option>${(L.docTypes||[]).map(t=>`<option ${f.docType===t?'selected':''}>${esc(t)}</option>`).join('')}</select></div>
+      ${u.isAdmin&&S.view==='dept'?`<div><label for="fdept">Bộ phận</label><select id="fdept" class="input"><option value="">Mọi bộ phận</option>${(L.depts||[]).map(d=>`<option ${f.dept===d?'selected':''}>${esc(d)}</option>`).join('')}</select></div>`:''}
+      <div><label for="ffrom">Từ ngày</label><input id="ffrom" type="date" class="input" value="${esc(f.from||'')}"></div>
+      <div><label for="fto">Đến ngày</label><input id="fto" type="date" class="input" value="${esc(f.to||'')}"></div>
+    </div>
+    <div class="btn-row"><button class="btn primary" onclick="applyFilter()">Áp dụng lọc</button><button class="btn" onclick="S.showFilter=false;clearFilter()">Xem toàn bộ</button></div>`;
+}
+function applyFilter(){
+  const v=id=>$(id)?$(id).value:'';
+  S.filter={ q:$('l-q').value.trim(), statuses:[...document.querySelectorAll('input[name=fs]:checked')].map(i=>i.value),
+    overdueOnly:$('fo').checked, submitter:v('fsub'), docType:v('ftype'), dept:v('fdept'), from:v('ffrom'), to:v('fto') };
+  S.showFilter=false; loadList();
+}
+
+/* ---------- Lớp phủ ---------- */
+function openSheet(html){ $('sheet-body').innerHTML=html; $('sheet').classList.remove('hidden'); document.body.style.overflow='hidden'; $('sheet-body').scrollTop=0; }
+function closeSheet(){ S.cur=null; S.detail=null; $('sheet').classList.add('hidden'); document.body.style.overflow=''; }
+function closePicker(){ $('picker').classList.add('hidden'); if($('sheet').classList.contains('hidden')) document.body.style.overflow=''; }
+
+/* ---------- Chọn người (người theo dõi) ---------- */
+let PK=null;
+function openPicker(o){
+  PK=Object.assign({q:'',dept:'',sel:(o.selected||[]).slice()},o);
+  $('picker').classList.remove('hidden'); document.body.style.overflow='hidden';
+  renderPicker();
+}
+function renderPicker(){
+  const staff=S.boot.staff.filter(s=>(PK.exclude||[]).indexOf(s.email)<0);
+  const depts=[...new Set(staff.map(s=>s.dept||'Chưa xếp bộ phận'))].sort();
+  const q=PK.q.toLowerCase();
+  const list=staff.filter(s=>(!PK.dept||s.dept===PK.dept)&&(!q||(s.name+' '+s.email).toLowerCase().indexOf(q)>=0));
+  const head=`<div class="sheet-head"><h2>${esc(PK.title)}</h2><button class="btn" onclick="closePicker()" aria-label="Đóng">✕</button></div>
+    <div class="filters" style="margin-top:10px"><input class="input full" id="pk-q" type="search" placeholder="Tìm theo tên…" value="${esc(PK.q)}" oninput="PK.q=this.value;renderPickerList()">
+    <select class="input full" id="pk-d" onchange="PK.dept=this.value;renderPickerList()" aria-label="Lọc theo bộ phận"><option value="">Mọi bộ phận</option>${depts.map(d=>`<option ${PK.dept===d?'selected':''}>${esc(d)}</option>`).join('')}</select></div>`;
+  if(!$('pk-q')){ $('picker-body').innerHTML=head+`<p class="hint" id="pk-c"></p><div class="people" id="pk-list"></div><div class="btn-row"><button class="btn primary block" onclick="donePicker()">Xong</button></div>`; }
+  renderPickerList();
+}
+function renderPickerList(){
+  const staff=S.boot.staff.filter(s=>(PK.exclude||[]).indexOf(s.email)<0);
+  const q=PK.q.toLowerCase();
+  const list=staff.filter(s=>(!PK.dept||s.dept===PK.dept)&&(!q||(s.name+' '+s.email).toLowerCase().indexOf(q)>=0));
+  $('pk-c').textContent=`Đã chọn ${PK.sel.length}/${PK.max} người`+(PK.note?' · '+PK.note:'');
+  $('pk-list').innerHTML=list.length?list.map(s=>{ const on=PK.sel.indexOf(s.email)>=0;
+    return `<button type="button" class="person ${on?'on':''}" onclick="pickToggle('${esc(s.email)}')" aria-pressed="${on}"><span class="ck">${on?'✓':''}</span><span><b>${esc(s.name)}</b><small>${esc(s.dept||'')} · ${esc(s.role||'')}</small></span></button>`; }).join('')
+    :'<div class="empty">Không có người phù hợp.</div>';
+}
+function pickToggle(email){
+  const i=PK.sel.indexOf(email);
+  if(i>=0) PK.sel.splice(i,1);
+  else { if(PK.sel.length>=PK.max) return toast(`Tối đa ${PK.max} người`,'err'); PK.sel.push(email); }
+  renderPickerList();
+}
+function donePicker(){ const cb=PK.onDone, sel=PK.sel.slice(); $('picker-body').innerHTML=''; closePicker(); cb(sel); }
+const nameOf = e => { const s=S.boot.staff.find(x=>x.email===e); return s?s.name:e; };
+
+/* ---------- Tải tệp ---------- */
+const LIM = () => S.boot.limits;
+const isPdfFile = f => f.type==='application/pdf' || /\.pdf$/i.test(f.name);
+function readB64(f){ return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>{ const u=String(r.result); res(u.slice(u.indexOf(',')+1)); }; r.onerror=rej; r.readAsDataURL(f); }); }
+function checkFile(f, kind){
+  const L=LIM();
+  if(kind==='pdf'){ if(!isPdfFile(f)) return `"${f.name}" không phải tệp PDF`; if(f.size>L.maxPdfMB*1048576) return `"${f.name}" nặng ${mb(f.size)}, vượt giới hạn ${L.maxPdfMB}MB`; }
+  else { if(!/^image\//.test(f.type)) return `"${f.name}" không phải ảnh`; if(f.size>L.maxImgMB*1048576) return `"${f.name}" nặng ${mb(f.size)}, vượt giới hạn ${L.maxImgMB}MB`; }
+  return '';
+}
+// Kiểm tra 4 byte đầu là %PDF (chặn tệp đổi đuôi)
+async function realPdf(f){ try{ const b=new Uint8Array(await f.slice(0,4).arrayBuffer()); return b[0]===0x25&&b[1]===0x50&&b[2]===0x44&&b[3]===0x46; }catch(e){ return true; } }
+async function uploadItems(items){
+  for(let i=0;i<items.length;i++){
+    const it=items[i]; if(it.upId) continue;
+    busy(true,`Đang tải lên ${i+1}/${items.length}: ${it.name} (${mb(it.size)})`);
+    const data = window.KV_DEMO ? '' : await readB64(it.file);
+    const r=await tk('upload',{name:it.name,mimeType:it.kind==='pdf'?'application/pdf':it.file.type,size:it.size,data});
+    it.upId=r.id;
+  }
+}
+async function downloadFile(id, fid, name, kind){
+  busy(true,'Đang tải '+(name||'tệp')+'…');
+  try{
+    const f=await tk('getFile', id, fid);
+    if(f.demo) return toast(f.message||'Bản thử nghiệm chỉ lưu tên tệp.','err');
+    const bin=atob(f.data), arr=new Uint8Array(bin.length);
+    for(let i=0;i<bin.length;i++) arr[i]=bin.charCodeAt(i);
+    if(kind==='img'){ $('lightbox-img').src='data:'+f.mimeType+';base64,'+f.data; $('lightbox').classList.remove('hidden'); return; }
+    const url=URL.createObjectURL(new Blob([arr],{type:f.mimeType||'application/pdf'}));
+    const a=document.createElement('a'); a.href=url; a.download=f.name||name; a.rel='noopener'; document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),60000); toast('Đã tải xuống '+(f.name||name),'ok');
+  }catch(err){ handleErr(err); } finally{ busy(false); }
+}
+
+/* ---------- Trình mới ---------- */
+function newForm(){ return {docType:'',title:'',summary:'',amount:'',urgency:'Thường',needBy:'',linkedTask:'',main:null,pdfs:[],imgs:[],watchers:[],preview:null}; }
+function syncNew(){
+  const F=S.form; if(!$('n-title')) return;
+  F.title=$('n-title').value; F.summary=$('n-sum').value; F.amount=$('n-amount').value; F.needBy=$('n-need').value; F.linkedTask=$('n-link').value;
+}
+function renderNew(){
+  if(!S.form) S.form=newForm();
+  syncNew();
+  const F=S.form, u=S.boot.user, L=LIM(), types=S.boot.docTypes;
+  const pv=F.preview;
+  let flowHtml='<p class="hint">Chọn loại văn bản để xem luồng ký sẽ áp dụng.</p>';
+  if(F.docType&&pv){
+    if(!pv.flow) flowHtml=`<div class="box warnbox" style="margin-top:8px">⚠️ ${esc(pv.message)}<br><span class="hint">Bạn vẫn có thể Lưu nháp.</span></div>`;
+    else flowHtml=`<div class="box" style="margin-top:8px"><div class="lock">🔒 Luồng ký do Quản trị viên thiết lập · ${esc(pv.flow.name)}</div>
+      <ol class="steps">${pv.flow.steps.map(s=>`<li><span class="ico ${s.skip?'skip':''}">${s.order}</span><div class="body"><b>${esc(s.name)}</b>${s.inactive?' <span class="over">(đã nghỉ – báo QTV)</span>':''}<div class="sub">${esc(s.dept)}${s.role?' · '+esc(s.role):''}</div><div class="sub">${s.skip?'Người trình – bỏ qua':'⏱ Thời hạn ký: '+s.amount+' '+s.unit}</div></div></li>`).join('')}</ol>
+      <p class="hint">📅 Dự kiến xong muộn nhất: <b>${fmtT(pv.flow.latest)}</b> (không tính Chủ nhật)</p></div>`;
+  }
+  const defW = pv&&pv.defaultWatchers||[];
+  $('view-new').innerHTML=`<form class="box" onsubmit="event.preventDefault()">
+    <h4>Trình văn bản mới</h4>
+    <label for="n-dept">Bộ phận</label><input id="n-dept" class="input" readonly value="${esc(u.dept||'Chưa xếp bộ phận')}" aria-describedby="n-dept-h"><div class="hint" id="n-dept-h">Tự lấy theo bộ phận của bạn, không đổi được.</div>
+    <label for="n-type">Loại văn bản *</label>
+    <select id="n-type" class="input" onchange="onType(this.value)"><option value="">— Chọn loại —</option>${types.map(t=>`<option ${F.docType===t?'selected':''}>${esc(t)}</option>`).join('')}</select>
+    ${flowHtml}
+    <label for="n-title">Tiêu đề *</label><input id="n-title" class="input" maxlength="200" value="${esc(F.title)}" placeholder="VD: Đề xuất chi mua thiết bị văn phòng">
+    <label for="n-sum">Tóm tắt nội dung</label><textarea id="n-sum" class="input" maxlength="1000" placeholder="Nội dung chính, lý do, đề xuất…">${esc(F.summary)}</textarea>
+    <div class="filters">
+      <div><label for="n-amount">Số tiền đề xuất (VNĐ)</label><input id="n-amount" class="input" inputmode="numeric" value="${esc(F.amount)}" placeholder="1.250.000" oninput="fmtMoneyInput(this)"></div>
+      <div><label for="n-need">Hạn cần ký</label><input id="n-need" type="date" class="input" value="${esc(F.needBy)}"></div>
+    </div>
+    <label>Mức độ</label>
+    <div class="seg" role="group" aria-label="Mức độ"><button type="button" class="${F.urgency==='Thường'?'on':''}" onclick="S.form.urgency='Thường';renderNew()">Thường</button><button type="button" class="k ${F.urgency==='Khẩn'?'on':''}" onclick="S.form.urgency='Khẩn';renderNew()">🔴 Khẩn</button></div>
+    <p class="hint">Tờ "Khẩn" hiển thị nổi bật nhưng không rút ngắn thời hạn ký.</p>
+    <label for="n-link">Mã việc liên kết (nếu có)</label><input id="n-link" class="input" value="${esc(F.linkedTask)}" placeholder="CV-0012" autocapitalize="characters">
+
+    <label for="n-main-btn">Tệp PDF chính * <span class="hint">(≤ ${L.maxPdfMB}MB)</span></label>
+    ${F.main?fileRow(F.main,"S.form.main=null;renderNew()"):`<button type="button" id="n-main-btn" class="btn block file-pick" onclick="$('n-main').click()">＋ Chọn tệp PDF chính</button>`}
+    <input id="n-main" type="file" accept="application/pdf,.pdf" hidden onchange="pickNew(this,'main')">
+
+    <label for="n-pdfs-btn">Phụ lục PDF <span class="hint">(${F.pdfs.length}/${L.maxPdfs} · ≤ ${L.maxPdfMB}MB/tệp)</span></label>
+    <div class="files">${F.pdfs.map((f,i)=>fileRow(f,`S.form.pdfs.splice(${i},1);renderNew()`)).join('')}</div>
+    <button type="button" id="n-pdfs-btn" class="btn block file-pick" style="margin-top:8px" onclick="$('n-pdfs').click()" ${F.pdfs.length>=L.maxPdfs?'disabled':''}>＋ Thêm phụ lục PDF</button>
+    <input id="n-pdfs" type="file" accept="application/pdf,.pdf" multiple hidden onchange="pickNew(this,'pdf')">
+
+    <label for="n-imgs-btn">Phụ lục ảnh <span class="hint">(${F.imgs.length}/${L.maxImgs} · ≤ ${L.maxImgMB}MB/ảnh)</span></label>
+    <div class="files">${F.imgs.map((f,i)=>fileRow(f,`S.form.imgs.splice(${i},1);renderNew()`)).join('')}</div>
+    <button type="button" id="n-imgs-btn" class="btn block file-pick" style="margin-top:8px" onclick="$('n-imgs').click()" ${F.imgs.length>=L.maxImgs?'disabled':''}>＋ Thêm ảnh</button>
+    <input id="n-imgs" type="file" accept="image/*" multiple hidden onchange="pickNew(this,'img')">
+
+    <label>Người theo dõi <span class="hint">(chỉ xem + nhận email mốc chính · tối đa ${L.maxWatch})</span></label>
+    <div class="chips">${defW.map(w=>`<span class="chip def" title="Người theo dõi mặc định của luồng"><span>🔒 ${esc(w.name)}</span></span>`).join('')}${F.watchers.map((e,i)=>`<span class="chip"><span>${esc(nameOf(e))}</span><button type="button" onclick="S.form.watchers.splice(${i},1);renderNew()" aria-label="Bỏ ${esc(nameOf(e))}">✕</button></span>`).join('')}</div>
+    <button type="button" class="btn block" style="margin-top:8px" onclick="pickWatchersNew()">＋ Thêm người theo dõi</button>
+
+    <div class="btn-row">
+      <button type="button" class="btn" onclick="doCreate(false)">💾 Lưu nháp</button>
+      <button type="button" class="btn primary" onclick="doCreate(true)" ${pv&&!pv.flow?'disabled':''}>✍ Trình ký ngay</button>
+    </div>
+  </form>`;
+}
+function fileRow(f, rm){ return `<div class="file-row"><span aria-hidden="true">${f.kind==='img'?'🖼':'📄'}</span><span class="nm">${esc(f.name)}</span><span class="sz">${mb(f.size)}</span><button type="button" class="rm" onclick="${rm}" aria-label="Bỏ ${esc(f.name)}">✕</button></div>`; }
+function fmtMoneyInput(el){ const d=el.value.replace(/\D/g,'').slice(0,13); el.value=d?d.replace(/\B(?=(\d{3})+(?!\d))/g,'.'):''; }
+async function onType(t){
+  syncNew(); S.form.docType=t; S.form.preview=null;
+  if(t){ try{ S.form.preview=await tk('flowPreview',t); }catch(err){ handleErr(err); } }
+  // bỏ người theo dõi trùng với người ký trong luồng
+  const fe = S.form.preview&&S.form.preview.flow ? S.form.preview.flow.steps.map(s=>s.email) : [];
+  S.form.watchers = S.form.watchers.filter(e=>fe.indexOf(e)<0);
+  renderNew();
+}
+async function pickNew(inp, kind){
+  syncNew();
+  const F=S.form, L=LIM(), files=[...inp.files], errs=[]; inp.value='';
+  for(const f of files){
+    const k = kind==='img'?'img':'pdf';
+    const bad=checkFile(f,k); if(bad){ errs.push(bad); continue; }
+    if(k==='pdf' && !(await realPdf(f))){ errs.push(`"${f.name}" không phải PDF thật (có thể đổi đuôi)`); continue; }
+    const it={file:f,name:f.name,size:f.size,kind:k};
+    if(kind==='main'){ F.main=it; break; }
+    const arr = kind==='img'?F.imgs:F.pdfs, max = kind==='img'?L.maxImgs:L.maxPdfs;
+    if(arr.length>=max){ errs.push(`Tối đa ${max} ${kind==='img'?'ảnh':'PDF phụ lục'}`); break; }
+    arr.push(it);
+  }
+  renderNew(); if(errs.length) toast(errs.join(' · '),'err');
+}
+function pickWatchersNew(){
+  syncNew();
+  const pv=S.form.preview, u=S.boot.user;
+  const flowEmails = pv&&pv.flow ? pv.flow.steps.map(s=>s.email) : [];
+  const exclude=[u.email].concat(flowEmails).concat((pv&&pv.defaultWatchers||[]).map(w=>w.email));
+  const def=(pv&&pv.defaultWatchers||[]).length;
+  openPicker({title:'Chọn người theo dõi', selected:S.form.watchers, exclude, max:LIM().maxWatch-def,
+    note: flowEmails.length?'người ký trong luồng đã được ẩn':'', onDone:sel=>{ S.form.watchers=sel; renderNew(); }});
+}
+async function doCreate(submitNow){
+  syncNew();
+  const F=S.form;
+  if(!F.docType) return toast('Vui lòng chọn loại văn bản','err');
+  if(!F.title.trim()) return toast('Vui lòng nhập tiêu đề','err');
+  if(!F.main) return toast('Vui lòng chọn tệp PDF chính','err');
+  if(submitNow && F.preview && !F.preview.flow) return toast(F.preview.message,'err');
+  try{
+    await uploadItems([F.main].concat(F.pdfs,F.imgs));
+    busy(true, submitNow?'Đang trình ký…':'Đang lưu nháp…');
+    S.view='mine'; S.filter={}; S.showFilter=false; $('l-q').value='';
+    const r=await tkRun(['create',[{docType:F.docType,title:F.title,summary:F.summary,amount:F.amount,urgency:F.urgency,needBy:F.needBy,linkedTask:F.linkedTask,
+      mainPdf:F.main.upId, attachments:F.pdfs.concat(F.imgs).map(x=>x.upId), watchers:F.watchers}, submitNow]],{});
+    S.form=null;
+    toast(submitNow?'Đã trình ký '+r.id+' và gửi email cho người ký bước 1':'Đã lưu nháp '+r.id,'ok');
+    await go('mine',true,true); await openDetail(r.id);
+  }catch(err){ handleErr(err); } finally{ busy(false); }
+}
+
+/* ---------- Chi tiết tờ trình ---------- */
+async function openDetail(id, quiet){
+  if(!quiet) busy(true,'Đang mở tờ trình…');
+  try{ S.detail=await tk('get',id); S.cur=id; renderDetail(); }
+  catch(err){ handleErr(err); if(quiet) closeSheet(); } finally{ if(!quiet) busy(false); }
+}
+const STEP_ICO = {'Đã ký':['done','✓'],'Chờ':['wait','●'],'Chưa tới':['','○'],'Từ chối':['rej','✗'],'Bổ sung':['fix','↺'],'Đã hủy':['void','–'],'Bỏ qua':['skip','⤼']};
+function stepLi(s){
+  const [c,ic]=STEP_ICO[s.status]||['','○'];
+  let line='';
+  if(s.status==='Đã ký') line=`✓ Đã ký ${fmtT(s.at)} · ${s.onTime&&s.onTime.indexOf('Trễ')===0?`<span class="over">${esc(s.onTime)}</span>`:esc(s.onTime||'')}`;
+  else if(s.status==='Chờ') line=`Đang chờ ký · hạn <b>${fmtT(s.dueAt)}</b> · ${leftHtml(s.leftMs)}`;
+  else if(s.status==='Từ chối') line=`<span class="over">✗ Từ chối ${fmtT(s.at)}</span>`;
+  else if(s.status==='Bổ sung') line=`<span class="soon">↺ Yêu cầu bổ sung ${fmtT(s.at)}</span>`;
+  else if(s.status==='Đã hủy') line='Đã hủy (nộp lại / thu hồi)'+(s.at?' · đã ký '+fmtT(s.at):'');
+  else if(s.status==='Bỏ qua') line='Người trình – bỏ qua';
+  else line='Chưa tới lượt · thời hạn '+s.amount+' '+s.unit;
+  return `<li><span class="ico ${c}" aria-hidden="true">${s.status==='Chưa tới'?s.order:ic}</span><div class="body"><b>${s.order}. ${esc(s.name)}</b> <span class="sub">· ${esc(s.dept||'')}</span>
+    <div class="sub">${line}</div>${s.comment&&s.status!=='Bỏ qua'?`<div class="cmt">💬 ${esc(s.comment)}</div>`:''}${s.note?`<div class="sub">↪ ${esc(s.note)}</div>`:''}</div></li>`;
+}
+function renderDetail(){
+  const D=S.detail, r=D.req, p=D.perms, u=S.boot.user;
+  let h=`<div class="sheet-head"><div>${pill(r.status)}${r.urgency==='Khẩn'?' <span class="pill khan">KHẨN</span>':''}<h2>${esc(r.title)}</h2></div><button class="btn" onclick="closeSheet()" aria-label="Đóng">✕</button></div>`;
+  if(r.status==='Từ chối') h+=`<div class="box warnbox">⛔ Tờ trình đã bị <b>từ chối</b> và kết thúc. Muốn trình lại, hãy tạo tờ trình mới.</div>`;
+  if(r.status==='Bổ sung'&&p.resubmit) h+=`<div class="box warnbox">↺ Người ký yêu cầu <b>bổ sung</b>. Xem lý do ở bước ký bên dưới, sửa rồi bấm <b>Nộp lại</b>. Luồng sẽ ký lại từ bước 1.</div>`;
+
+  // Hộp ký – đặt trên cùng để người ký thấy ngay
+  if(p.sign){
+    const cands=S.boot.staff.filter(s=>s.email!==u.email&&s.email!==r.submitterEmail&&!D.steps.some(x=>x.email===s.email&&x.status!=='Đã hủy'&&x.status!=='Bỏ qua')&&rankOf(s.role)>=rankOf(u.role));
+    h+=`<div class="box sign"><h4>✍ Đến lượt bạn ký (bước ${r.curStep}/${r.totalSteps})</h4>
+      <p class="hint" style="margin-top:0">Hãy mở và đọc tệp PDF chính trước khi ký. Mã SHA-256 sẽ được kiểm tra lại lúc ký.</p>
+      <label for="g-cmt">Ý kiến (bắt buộc khi yêu cầu bổ sung hoặc từ chối)</label>
+      <textarea id="g-cmt" class="input" maxlength="1000" placeholder="Đồng ý / cần bổ sung gì / lý do từ chối…"></textarea>
+      <label for="g-pw">Mật khẩu của bạn (để xác nhận ký duyệt)</label>
+      <div class="pw"><input id="g-pw" class="input" type="password" autocomplete="current-password"><button type="button" class="eye" onclick="eye('g-pw',this)" aria-label="Hiện mật khẩu">👁</button></div>
+      <div class="sign-btns">
+        <button class="btn ok" onclick="act('sign',this)">✓ Ký duyệt</button>
+        <button class="btn accent" onclick="act('fix',this)">↺ Yêu cầu bổ sung</button>
+        <button class="btn red" onclick="twice(this,()=>act('reject',this))">✗ Từ chối</button>
+      </div>
+      <p class="hint">Từ chối là <b>kết thúc hẳn</b> tờ trình (bấm 2 lần để xác nhận).</p>
+      <details style="margin-top:8px"><summary>↪ Ủy quyền cho người khác ký</summary>
+        <label for="g-to">Người nhận ủy quyền (cùng hoặc cao hơn vai trò)</label>
+        <select id="g-to" class="input"><option value="">— Chọn người —</option>${cands.map(s=>`<option value="${esc(s.email)}">${esc(s.name)} · ${esc(s.dept||'')} · ${esc(s.role)}</option>`).join('')}</select>
+        <label for="g-why">Lý do ủy quyền *</label><input id="g-why" class="input" maxlength="1000" placeholder="VD: đi công tác đến thứ Sáu">
+        <p class="hint">Hạn ký của bước giữ nguyên.</p>
+        <div class="btn-row"><button class="btn" onclick="act('delegate',this)">Ủy quyền</button></div>
+      </details></div>`;
+  }
+
+  h+=`<div class="box"><dl class="kv">
+      <dt>Mã</dt><dd>${esc(r.id)}</dd>
+      <dt>Loại</dt><dd>${esc(r.docType)}</dd>
+      <dt>Bộ phận</dt><dd>${esc(r.dept)}</dd>
+      <dt>Người trình</dt><dd>${esc(r.submitterName)}</dd>
+      <dt>Ngày tạo</dt><dd>${fmtT(r.createdAt)}</dd>
+      ${r.amount?`<dt>Số tiền</dt><dd><b>${money(r.amount)}</b></dd>`:''}
+      ${r.needBy?`<dt>Hạn cần ký</dt><dd>${fmtYmd(r.needBy)}</dd>`:''}
+      ${r.linkedTask?`<dt>Mã việc</dt><dd>${esc(r.linkedTask)}</dd>`:''}
+      <dt>Phiên bản</dt><dd>${r.version}${r.round>1?` · lượt trình ${r.round}`:''}</dd>
+      <dt>SHA-256</dt><dd class="mono" title="${esc(r.sha)}">${esc(String(r.sha).slice(0,12))}…</dd>
+    </dl>${r.summary?`<h4 style="margin-top:12px">Tóm tắt</h4><div class="pre">${esc(r.summary)}</div>`:''}</div>`;
+
+  // Tệp
+  const cur=r.pdfs[r.pdfs.length-1], olds=r.pdfs.slice(0,-1).reverse();
+  const fbtn=(f,label,kind)=>`<button type="button" class="file-row" onclick="downloadFile('${esc(r.id)}','${esc(f.id)}',this.dataset.n,'${kind||'pdf'}')" data-n="${esc(f.name)}"><span aria-hidden="true">${kind==='img'?'🖼':'📄'}</span><span class="nm">${label}</span><span class="sz">${f.size?mb(f.size):''} ⬇</span></button>`;
+  h+=`<div class="box"><h4>Văn bản</h4><div class="files">${cur?fbtn(cur,'<b>PDF chính</b> · '+esc(cur.name)+(r.version>1?' (v'+r.version+')':'')):''}
+    ${olds.map(f=>fbtn(f,'Phiên bản cũ v'+f.v+' · '+esc(f.name))).join('')}
+    ${r.attachments.map(f=>fbtn(f,'Phụ lục · '+esc(f.name),f.kind)).join('')}
+    ${r.receipt?fbtn(r.receipt,'🧾 <b>Phiếu xác nhận PDF</b>'):''}</div>
+    ${D.receiptData?`<div class="btn-row"><button class="btn" onclick="showReceipt()">🖨 Xem / in phiếu xác nhận</button></div>`:''}</div>`;
+
+  // Tiến trình
+  h+=`<div class="box"><h4>Luồng ký${r.totalSteps?` (${r.totalSteps} bước)`:''}</h4>${D.steps.length?`<ol class="steps">${D.steps.map(stepLi).join('')}</ol>`:'<p class="hint">Chưa trình. Luồng ký sẽ được gán tự động theo bộ phận và loại văn bản khi bấm Trình ký.</p>'}
+    ${D.oldSteps.length?`<details style="margin-top:6px"><summary>Lượt trình trước (${D.oldSteps.length} bước, đã hủy)</summary><ol class="steps">${D.oldSteps.map(s=>stepLi(Object.assign({},s,{order:s.order}))).join('')}</ol></details>`:''}</div>`;
+
+  // Người theo dõi
+  h+=`<div class="box"><h4>👁 Người theo dõi (${r.watchers.length})</h4>
+    ${r.watchers.length?`<div class="chips">${r.watchers.map(w=>`<span class="chip ${w.kind==='default'?'def':''}"><span>${w.kind==='default'?'🔒 ':''}${esc(w.name)}</span>${w.canRemove?`<button type="button" onclick="removeWatcher('${esc(w.email)}',this)" aria-label="Bỏ ${esc(w.name)}">✕</button>`:''}</span>`).join('')}</div>`:'<p class="hint" style="margin:0">Chưa có người theo dõi.</p>'}
+    ${p.addWatcher?`<button class="btn block" style="margin-top:10px" onclick="addWatchers()">＋ Thêm người theo dõi</button>`:''}</div>`;
+
+  // Người trình: nộp lại / thu hồi
+  if(p.resubmit){
+    const draft=r.status==='Nháp';
+    h+=`<div class="box sign"><h4>${draft?'✍ Trình ký':'↻ Nộp lại'}</h4>
+      ${draft?'':'<p class="hint" style="margin-top:0">Khi nộp lại, các chữ ký cũ chuyển "Đã hủy" và luồng <b>ký lại từ bước 1</b>, hạn ký tính lại từ đầu.</p>'}
+      <label for="r-pdf-btn">PDF đã sửa ${draft?'(nếu muốn thay)':'(nếu có)'}</label>
+      <div id="r-pdf-row">${S.reFile?fileRow(S.reFile,"S.reFile=null;renderDetail()"):`<button type="button" id="r-pdf-btn" class="btn block file-pick" onclick="$('r-pdf').click()">＋ Chọn PDF mới</button>`}</div>
+      <input id="r-pdf" type="file" accept="application/pdf,.pdf" hidden onchange="pickRe(this)">
+      <label for="r-note">${draft?'Ghi chú (tùy chọn)':'Ghi chú phần đã bổ sung'}</label><textarea id="r-note" class="input" maxlength="1000"></textarea>
+      <div class="btn-row"><button class="btn primary" onclick="act('resubmit',this)">${draft?'✍ Trình ký ngay':'↻ Nộp lại – ký lại từ bước 1'}</button></div></div>`;
+  }
+  if(p.withdraw) h+=`<div class="btn-row"><button class="btn danger" onclick="twice(this,()=>act('withdraw',this))">↩ Thu hồi tờ trình</button></div><p class="hint">Chỉ thu hồi được khi chưa ai ký. Sau khi thu hồi có thể sửa và trình lại.</p>`;
+
+  // Quản trị viên
+  if(p.reassign){
+    const curS=D.steps.find(s=>s.status==='Chờ');
+    const cands=S.boot.staff.filter(s=>s.email!==u.email&&s.email!==r.submitterEmail&&!D.steps.some(x=>x.email===s.email&&x.status!=='Đã hủy'&&x.status!=='Bỏ qua'));
+    h+=`<details class="box"><summary>🔁 Đổi người ký bước này (QTV)</summary>
+      <p class="hint" style="margin-top:0">Bước ${curS?curS.order:''} đang do <b>${esc(curS?curS.name:'')}</b> giữ. Hạn ký giữ nguyên. Quản trị viên không được tự nhận ký thay.</p>
+      <label for="a-to">Người ký mới</label><select id="a-to" class="input"><option value="">— Chọn người —</option>${cands.map(s=>`<option value="${esc(s.email)}">${esc(s.name)} · ${esc(s.dept||'')}</option>`).join('')}</select>
+      <label for="a-why">Lý do *</label><input id="a-why" class="input" maxlength="1000">
+      <div class="btn-row"><button class="btn" onclick="act('reassign',this)">Đổi người ký</button></div></details>`;
+  }
+  if(p.del){
+    h+=`<details class="box warnbox"><summary style="color:var(--danger)">🗑 Xóa tờ trình (QTV)</summary>
+      <p class="hint" style="margin-top:0">Xóa được mọi trạng thái, kể cả đã hoàn tất. PDF, phụ lục, phiếu xác nhận chuyển vào <b>Thùng rác Google Drive, còn khôi phục được trong 30 ngày</b>. Nhật ký giữ 1 dòng tóm tắt.</p>
+      <label for="x-why">Lý do xóa *</label><input id="x-why" class="input" maxlength="1000">
+      <label for="x-pw">Mật khẩu của bạn *</label>
+      <div class="pw"><input id="x-pw" class="input" type="password" autocomplete="current-password"><button type="button" class="eye" onclick="eye('x-pw',this)" aria-label="Hiện mật khẩu">👁</button></div>
+      <div class="btn-row"><button class="btn red" onclick="twice(this,()=>act('delete',this))">🗑 Xóa tờ trình</button></div></details>`;
+  }
+
+  h+=`<div class="box"><h4>Lịch sử</h4>${D.history.length?D.history.map(x=>`<div class="log"><b>${esc(x.action)}</b> · ${esc(x.by)} · ${esc(x.time)}${x.detail?'<br>'+esc(x.detail):''}</div>`).join(''):'<p class="hint">Chưa có lịch sử.</p>'}</div>`;
+  const keep=$('sheet').classList.contains('hidden')?0:$('sheet-body').scrollTop;
+  openSheet(h); if(keep) $('sheet-body').scrollTop=keep;
+}
+const rankOf = r => ({'Quản trị viên':3,'Admin':3,'Quản lý':2}[r]||1);
+async function pickRe(inp){
+  const f=inp.files[0]; inp.value=''; if(!f) return;
+  const bad=checkFile(f,'pdf'); if(bad) return toast(bad,'err');
+  if(!(await realPdf(f))) return toast(`"${f.name}" không phải PDF thật`,'err');
+  const note=$('r-note')?$('r-note').value:'';
+  S.reFile={file:f,name:f.name,size:f.size,kind:'pdf'}; renderDetail(); if($('r-note')) $('r-note').value=note;
+}
+async function act(kind, btn){
+  const D=S.detail, id=D.req.id, v=x=>$(x)?$(x).value.trim():'', pwOf=x=>$(x)?$(x).value:'';
+  const msgs={sign:'Đã ký duyệt',fix:'Đã gửi yêu cầu bổ sung',reject:'Đã từ chối tờ trình',delegate:'Đã ủy quyền',resubmit:'Đã trình ký',withdraw:'Đã thu hồi',reassign:'Đã đổi người ký',delete:'Đã xóa tờ trình'};
+  try{
+    if(kind==='sign'){ if(!$('g-pw').value) return toast('Vui lòng nhập mật khẩu để xác nhận ký','err'); }
+    if((kind==='fix'||kind==='reject')&&!v('g-cmt')) { $('g-cmt').focus(); return toast(kind==='fix'?'Vui lòng ghi rõ cần bổ sung gì vào ô Ý kiến':'Vui lòng ghi lý do từ chối vào ô Ý kiến','err'); }
+    if(kind==='delegate'&&(!v('g-to')||!v('g-why'))) return toast('Chọn người nhận và ghi lý do ủy quyền','err');
+    if(kind==='reassign'&&(!v('a-to')||!v('a-why'))) return toast('Chọn người ký mới và ghi lý do','err');
+    if(kind==='delete'&&(!v('x-why')||!$('x-pw').value)) return toast('Nhập lý do xóa và mật khẩu','err');
+    if(kind==='resubmit'&&S.reFile) await uploadItems([S.reFile]);
+    busy(true,'Đang xử lý…');
+    const op={
+      sign:['sign',[id,pwOf('g-pw'),v('g-cmt')]], fix:['requestChanges',[id,v('g-cmt')]], reject:['reject',[id,v('g-cmt')]],
+      delegate:['delegate',[id,v('g-to'),v('g-why')]], resubmit:['submit',[id,S.reFile?S.reFile.upId:'',v('r-note')]],
+      withdraw:['withdraw',[id]], reassign:['reassign',[id,v('a-to'),v('a-why')]], delete:['del',[id,pwOf('x-pw'),v('x-why')]]
+    }[kind];
+    // 1 lượt gọi: thao tác + số đếm + chi tiết mới + danh sách mới
+    const r=await tkRun(op,{detail: kind==='delete'?null:id});
+    S.reFile=null;
+    toast(kind==='sign'&&r&&r.status==='Hoàn tất'?'Đã ký – tờ trình HOÀN TẤT, đã tạo phiếu xác nhận':(kind==='resubmit'&&D.req.status!=='Nháp'?'Đã nộp lại – ký lại từ bước 1':msgs[kind]),'ok');
+    if(kind==='delete') closeSheet(); else renderDetail();
+    renderTabs(); if(BOXES[S.view]) renderList();
+  }catch(err){ if($('g-pw')) $('g-pw').value=''; handleErr(err); } finally{ busy(false); }
+}
+function addWatchers(){
+  const D=S.detail, r=D.req;
+  const exclude=[r.submitterEmail].concat(D.steps.filter(s=>s.status!=='Đã hủy'&&s.status!=='Bỏ qua').map(s=>s.email)).concat(r.watchers.map(w=>w.email));
+  openPicker({title:'Thêm người theo dõi', selected:[], exclude, max:Math.max(0,LIM().maxWatch-r.watchers.length), onDone:async sel=>{
+    if(!sel.length) return;
+    busy(true); try{ await tkRun(['addWatchers',[r.id,sel]],{detail:r.id,list:false}); renderDetail(); toast('Đã thêm người theo dõi','ok'); }catch(err){ handleErr(err); } finally{ busy(false); }
+  }});
+}
+async function removeWatcher(email){
+  const id=S.detail.req.id;
+  busy(true); try{ await tkRun(['removeWatcher',[id,email]],{detail:id,list:false}); renderDetail(); toast('Đã bỏ người theo dõi','ok'); }catch(err){ handleErr(err); } finally{ busy(false); }
+}
+function showReceipt(){
+  const d=S.detail.receiptData;
+  const rows=[['Mã tờ trình',d.id],['Tiêu đề',d.title],['Loại văn bản',d.docType],['Bộ phận',d.dept],['Người trình',d.submitter],['Ngày tạo',d.createdAt],['Số tiền đề xuất',d.amount||'—'],['Mức độ',d.urgency||'Thường'],['Tệp gốc',d.file+' (phiên bản '+d.version+')'],['Người theo dõi',d.watchers.join(', ')||'—']];
+  openSheet(`<div class="sheet-head"><h2>Phiếu xác nhận</h2><button class="btn" onclick="openDetail('${esc(d.id)}',true)" aria-label="Quay lại">← Quay lại</button></div>
+    <div class="btn-row" style="margin-bottom:12px"><button class="btn primary" onclick="window.print()">🖨 In / Lưu PDF</button></div>
+    <div class="receipt" id="receipt-print"><div style="text-align:center;font-weight:700;letter-spacing:.06em">TẬP ĐOÀN ABG</div><h1>PHIẾU XÁC NHẬN TRÌNH KÝ</h1>
+    <table>${rows.map(r=>`<tr><th style="width:34%">${esc(r[0])}</th><td>${esc(r[1])}</td></tr>`).join('')}</table>
+    ${d.summary?`<p><b>Tóm tắt:</b> ${esc(d.summary)}</p>`:''}
+    <h3 style="font-size:15px;margin:14px 0 4px">Các bước ký</h3>
+    <table><tr><th>Bước</th><th>Người ký</th><th>Kết quả · thời điểm</th><th>Ý kiến</th></tr>${d.steps.map(s=>`<tr><td>${s.order}</td><td>${esc(s.name)}<br><small>${esc(s.dept||'')}</small></td><td>${esc(s.status)}${s.at?'<br>'+esc(s.at):''}${s.onTime?'<br>'+esc(s.onTime):''}</td><td>${esc(s.comment||'')}${s.note?'<br><small>'+esc(s.note)+'</small>':''}</td></tr>`).join('')}</table>
+    <p><b>SHA-256 tệp gốc:</b><br><span class="mono">${esc(d.sha)}</span></p>
+    <p style="font-size:12px;font-style:italic">Xác nhận PHÊ DUYỆT NỘI BỘ có ghi vết, KHÔNG phải chữ ký số theo Luật Giao dịch điện tử.</p></div>`);
+}
+
+/* ---------- QTV: Luồng ký & Loại văn bản ---------- */
+async function loadFlows(){
+  try{ S.flows=await tk('listFlows'); S.view==='flows'?renderFlows():renderTypes(); }catch(err){ handleErr(err); }
+}
+function renderFlows(){
+  const F=S.flows, byDept={};
+  F.flows.forEach(f=>(byDept[f.dept]=byDept[f.dept]||[]).push(f));
+  const depts=Object.keys(byDept).sort();
+  const noFlow=F.depts.filter(d=>!byDept[d]||!byDept[d].some(f=>f.status!=='Ngừng'));
+  $('view-flows').innerHTML=`<div class="box"><h4>⚙️ Luồng ký theo bộ phận</h4>
+    <p class="hint" style="margin-top:0">Chỉ Quản trị viên thấy mục này. Mỗi bộ phận + loại văn bản có tối đa 1 luồng đang dùng; luồng "Tất cả" áp dụng khi không có luồng riêng. Sửa luồng chỉ áp dụng cho tờ trình mới.</p>
+    <button class="btn primary block" onclick="editFlow()">＋ Tạo luồng mới</button>
+    ${noFlow.length?`<p class="hint" style="color:var(--danger)">⚠️ Chưa có luồng: ${noFlow.map(esc).join(', ')}. Nhân sự các bộ phận này chưa trình ký được.</p>`:''}</div>
+    ${depts.map(d=>`<div class="box"><h4>🏢 ${esc(d)}</h4>${byDept[d].map(f=>`<div class="flow ${f.status==='Ngừng'?'off':''}">
+      <div style="display:flex;justify-content:space-between;gap:8px;align-items:flex-start"><div style="min-width:0"><b>${esc(f.name)}</b><div class="sub hint" style="margin:2px 0 0">📂 ${esc(f.docType)} · ${f.status==='Ngừng'?'⏸ Ngừng':'✅ Đang dùng'}</div></div></div>
+      <div class="steps-line">${f.steps.map((s,i)=>`${i+1}. ${esc(s.name)}${s.inactive?' ⚠️':''} (${s.amount} ${esc(s.unit)})`).join(' → ')}</div>
+      ${f.watchers.length?`<div class="steps-line">👁 Theo dõi mặc định: ${f.watchers.map(w=>esc(w.name)).join(', ')}</div>`:''}
+      <div class="btn-row" style="margin-top:8px"><button class="btn sm" onclick="editFlow('${esc(f.id)}')">✏️ Sửa</button><button class="btn sm" onclick="setFlowStatus('${esc(f.id)}','${f.status==='Ngừng'?'Đang dùng':'Ngừng'}')">${f.status==='Ngừng'?'▶ Bật lại':'⏸ Tắt'}</button></div>
+    </div>`).join('')}</div>`).join('')}`;
+}
+function editFlow(id){
+  const f=id?S.flows.flows.find(x=>x.id===id):null;
+  S.fe={ id:f?f.id:'', name:f?f.name:'', dept:f?f.dept:(S.flows.depts[0]||''), docType:f?f.docType:'Tất cả',
+    steps:f?f.steps.map(s=>({email:s.email,dept:s.dept,amount:s.amount,unit:s.unit})):[{email:'',dept:'',amount:1,unit:'ngày'}],
+    watchers:f?f.watchers.map(w=>w.email):[] };
+  renderFlowEditor();
+}
+function syncFE(){
+  const E=S.fe; if(!$('fe-name')) return;
+  E.name=$('fe-name').value; E.dept=$('fe-dept').value; E.docType=$('fe-type').value;
+  E.steps.forEach((s,i)=>{ s.dept=$('fe-sd'+i).value; s.email=$('fe-se'+i).value; s.amount=$('fe-sa'+i).value; s.unit=$('fe-su'+i).value; });
+}
+function renderFlowEditor(){
+  const E=S.fe, staff=S.boot.staff, allDepts=[...new Set(staff.map(s=>s.dept||'Chưa xếp bộ phận').concat(S.flows.depts))].sort();
+  const types=['Tất cả'].concat(S.flows.types.filter(t=>t.status!=='Ngừng'||t.name===E.docType).map(t=>t.name));
+  const keep=$('sheet').classList.contains('hidden')?0:$('sheet-body').scrollTop;
+  openSheet(`<div class="sheet-head"><h2>${E.id?'Sửa luồng '+esc(E.id):'Tạo luồng ký mới'}</h2><button class="btn" onclick="closeSheet()" aria-label="Đóng">✕</button></div>
+    <div class="box">
+      <label for="fe-dept">Bộ phận *</label><select id="fe-dept" class="input">${allDepts.map(d=>`<option ${E.dept===d?'selected':''}>${esc(d)}</option>`).join('')}</select>
+      <label for="fe-type">Loại văn bản *</label><select id="fe-type" class="input">${types.map(t=>`<option ${E.docType===t?'selected':''}>${esc(t)}</option>`).join('')}</select>
+      <label for="fe-name">Tên luồng</label><input id="fe-name" class="input" maxlength="100" value="${esc(E.name)}" placeholder="Để trống: tự đặt theo bộ phận + loại">
+    </div>
+    <div class="box"><h4>Các bước ký (tối đa ${LIM().maxSteps}) – theo thứ tự</h4>
+      ${E.steps.map((s,i)=>{ const opts=staff.filter(x=>!s.dept||(x.dept||'Chưa xếp bộ phận')===s.dept);
+        return `<div class="fstep"><div class="num">Bước ${i+1}</div>
+        <div class="row"><select id="fe-sd${i}" class="input" aria-label="Bộ phận người ký bước ${i+1}" onchange="syncFE();S.fe.steps[${i}].email='';renderFlowEditor()"><option value="">Mọi bộ phận</option>${allDepts.map(d=>`<option ${s.dept===d?'selected':''}>${esc(d)}</option>`).join('')}</select>
+        <select id="fe-se${i}" class="input" aria-label="Người ký bước ${i+1}"><option value="">— Người ký —</option>${opts.map(x=>`<option value="${esc(x.email)}" ${s.email===x.email?'selected':''}>${esc(x.name)}</option>`).join('')}${s.email&&!opts.some(x=>x.email===s.email)?`<option value="${esc(s.email)}" selected>${esc(nameOf(s.email))}</option>`:''}</select></div>
+        <div class="row3"><input id="fe-sa${i}" class="input" type="number" min="1" max="365" value="${esc(s.amount)}" aria-label="Thời hạn bước ${i+1}"><select id="fe-su${i}" class="input" aria-label="Đơn vị"><option ${s.unit==='giờ'?'selected':''}>giờ</option><option ${s.unit!=='giờ'?'selected':''}>ngày</option></select>
+        <button type="button" class="mini" onclick="moveFS(${i},-1)" ${i===0?'disabled':''} aria-label="Lên">▲</button><button type="button" class="mini" onclick="moveFS(${i},1)" ${i===E.steps.length-1?'disabled':''} aria-label="Xuống">▼</button><button type="button" class="mini" style="color:var(--danger)" onclick="delFS(${i})" aria-label="Xóa bước ${i+1}">✕</button></div></div>`; }).join('')}
+      ${E.steps.length<LIM().maxSteps?`<button type="button" class="btn block file-pick" style="margin-top:10px" onclick="syncFE();S.fe.steps.push({email:'',dept:'',amount:1,unit:'ngày'});renderFlowEditor()">＋ Thêm bước</button>`:''}
+      <p class="hint">Thời hạn tính từ lúc bước tới lượt, không tính Chủ nhật. VD: 1 ngày bắt đầu thứ Bảy 10:00 → hạn thứ Hai 10:00.</p>
+    </div>
+    <div class="box"><h4>👁 Người theo dõi mặc định</h4><p class="hint" style="margin-top:0">VD: Kế toán trưởng theo dõi mọi Đề xuất chi. Người trình không bỏ được.</p>
+      <div class="chips">${E.watchers.map((e,i)=>`<span class="chip"><span>${esc(nameOf(e))}</span><button type="button" onclick="syncFE();S.fe.watchers.splice(${i},1);renderFlowEditor()" aria-label="Bỏ">✕</button></span>`).join('')}</div>
+      <button type="button" class="btn block" style="margin-top:8px" onclick="syncFE();openPicker({title:'Người theo dõi mặc định',selected:S.fe.watchers,exclude:S.fe.steps.map(s=>s.email),max:${LIM().maxWatch},onDone:sel=>{S.fe.watchers=sel;renderFlowEditor();}})">＋ Chọn người theo dõi mặc định</button></div>
+    <div class="btn-row"><button class="btn primary block" onclick="saveFlow()">💾 Lưu luồng ký</button></div>
+    <p class="hint">Lưu xong chỉ áp dụng cho tờ trình mới; tờ đang chạy giữ người ký và hạn cũ.</p>`);
+  if(keep) $('sheet-body').scrollTop=keep;
+}
+function moveFS(i,d){ syncFE(); const a=S.fe.steps, j=i+d; [a[i],a[j]]=[a[j],a[i]]; renderFlowEditor(); }
+function delFS(i){ syncFE(); if(S.fe.steps.length<=1) return toast('Luồng cần ít nhất 1 bước','err'); S.fe.steps.splice(i,1); renderFlowEditor(); }
+async function saveFlow(){
+  syncFE(); const E=S.fe;
+  if(E.steps.some(s=>!s.email)) return toast('Mỗi bước cần chọn người ký','err');
+  busy(true,'Đang lưu luồng ký…');
+  try{ S.flows=await tk('saveFlow',{id:E.id,name:E.name,dept:E.dept,docType:E.docType,steps:E.steps.map(s=>({email:s.email,amount:Number(s.amount),unit:s.unit})),watchers:E.watchers});
+    closeSheet(); renderFlows(); toast('Đã lưu luồng ký','ok'); }
+  catch(err){ handleErr(err); } finally{ busy(false); }
+}
+async function setFlowStatus(id,st){
+  busy(true); try{ S.flows=await tk('setFlowStatus',id,st); renderFlows(); toast(st==='Ngừng'?'Đã tắt luồng':'Đã bật luồng','ok'); }catch(err){ handleErr(err); } finally{ busy(false); }
+}
+function renderTypes(){
+  const T=S.flows.types;
+  $('view-types').innerHTML=`<form class="box" onsubmit="addType(event)"><h4>🗂 Thêm loại văn bản</h4>
+      <label for="t-name">Tên loại</label><input id="t-name" class="input" maxlength="100" required placeholder="VD: Biên bản nghiệm thu">
+      <div class="btn-row"><button class="btn primary block" type="submit">Thêm loại</button></div>
+      <p class="hint">Loại đã ngừng không chọn được khi trình mới; tờ trình cũ vẫn xem được.</p></form>
+    <div class="box"><h4>Danh sách loại văn bản</h4>${T.map(t=>`<div class="type-row ${t.status==='Ngừng'?'off':''}"><div style="min-width:0"><b>${esc(t.name)}</b><div class="hint" style="margin:0">${esc(t.status)}</div></div>
+      <button class="btn sm" data-n="${esc(t.name)}" onclick="toggleType(this.dataset.n,'${t.status==='Ngừng'?'Đang dùng':'Ngừng'}')">${t.status==='Ngừng'?'▶ Dùng lại':'⏸ Ngừng'}</button></div>`).join('')}</div>`;
+}
+async function addType(e){
+  e.preventDefault(); busy(true);
+  try{ [S.flows,S.boot]=await tk('multi',['saveDocType',[{name:$('t-name').value,status:'Đang dùng',isNew:true}]],['bootstrap',[]]); renderTypes(); toast('Đã thêm loại văn bản','ok'); }
+  catch(err){ handleErr(err); } finally{ busy(false); }
+}
+async function toggleType(name,st){
+  busy(true); try{ [S.flows,S.boot]=await tk('multi',['saveDocType',[{name,status:st}]],['bootstrap',[]]); renderTypes(); toast(st==='Ngừng'?'Đã ngừng loại văn bản':'Đã dùng lại','ok'); }catch(err){ handleErr(err); } finally{ busy(false); }
+}
+
+document.addEventListener('keydown',e=>{ if(e.key!=='Escape') return;
+  if(!$('lightbox').classList.contains('hidden')) return $('lightbox').classList.add('hidden');
+  if(!$('picker').classList.contains('hidden')) return closePicker();
+  if(!$('sheet').classList.contains('hidden')) closeSheet(); });
+
+/* ---------- Chạy trong trang gộp (index.html có 2 nút: Giao việc | Trình ký) ---------- */
+window.KV_EMBED=(function(){ try{ return window.parent!==window && !!window.parent.KV_SHELL; }catch(e){ return false; } })();
+function tellShell(m){ if(window.KV_EMBED) try{ window.parent.postMessage(Object.assign({kv:1},m), location.origin); }catch(e){} }
+window.kvOnShow=function(){ const t=recall(TOKEN_KEY()); if(t&&t!==S.token){ S.token=t; busy(true); start().catch(handleErr).finally(()=>busy(false)); } else if(!t&&S.token) showLogin(); };
+
+/* ---------- Khởi động ---------- */
+(function init(){
+  if(window.KV_EMBED) $('to-gv').classList.add('hidden');
+  window.KV_API_URL=String(window.KV_API_URL||'').trim();
+  const cs=$('conn-status');
+  if(window.KV_API_URL){
+    if(/^https:\/\/script\.google\.com\/.+\/exec$/.test(window.KV_API_URL)) cs.innerHTML='<span style="color:var(--ok)">●</span> Đã kết nối Google Sheet';
+    else cs.innerHTML='<span style="color:var(--danger)">●</span> Link API không đúng dạng. Link phải bắt đầu bằng https://script.google.com/ và kết thúc bằng /exec';
+  } else if(!window.KV_DEMO) cs.innerHTML='<span style="color:var(--ok)">●</span> Đang chạy trên Google Apps Script';
+  if(window.KV_BUILD) cs.innerHTML+=(cs.innerHTML?' · ':'')+'Phiên bản '+window.KV_BUILD;
+  const q=new URLSearchParams(location.search); const open=q.get('id');
+  S.token=recall(TOKEN_KEY());
+  if(S.token){ busy(true); start().then(()=>open&&openDetail(open)).catch(handleErr).finally(()=>busy(false)); }
+  else showLogin();
+})();
+</script>
+</body>
+</html>

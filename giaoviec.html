@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script>window.KV_BUILD = "15/10/2026 17:11";</script>
+<script>document.write('<script src="config.js?t=' + Date.now() + '"><\/script>');</script>
+<style>
+:root{
+  --brand:#16365c; --brand-soft:#e5edf6; --accent:#e07a2e;
+  --bg:#f5f3ee; --card:#ffffff; --text:#1d2a2b; --muted:#5f6b6c; --line:#e2ded5;
+  --danger:#c0392b; --ok:#2e7d4f; --warn:#b7791f; --radius:14px;
+}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{font-family:-apple-system,"Segoe UI",Roboto,Arial,sans-serif;background:var(--bg);color:var(--text);font-size:16px;line-height:1.45}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.hidden{display:none!important}
+.wrap{max-width:860px;margin:0 auto;padding:0 16px}
+
+/* Login */
+#login{min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 16px}
+.login-card{background:var(--card);border-radius:20px;padding:28px 22px;width:100%;max-width:380px;box-shadow:0 10px 30px rgba(22,54,92,.12)}
+.brand{font-weight:800;letter-spacing:.08em;color:var(--brand);font-size:22px}
+.brand small{display:block;font-weight:500;letter-spacing:0;color:var(--muted);font-size:14px;margin-top:2px}
+label{display:block;font-weight:600;font-size:14px;margin:14px 0 6px}
+.input{width:100%;min-height:48px;padding:10px 12px;border:1.5px solid var(--line);border-radius:10px;background:#fff}
+textarea.input{min-height:84px;resize:vertical}
+.input:focus{border-color:var(--brand);outline:none}
+
+/* Buttons */
+.btn{min-height:48px;padding:10px 16px;border-radius:12px;border:1.5px solid var(--line);background:#fff;font-weight:600}
+.btn.primary{background:var(--brand);border-color:var(--brand);color:#fff}
+.btn.accent{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.btn.danger{color:var(--danger);border-color:#efc9c4}
+.btn.block{width:100%}
+.btn:disabled{opacity:.6}
+.btn-row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.btn-row .btn{flex:1 1 140px}
+
+/* Header */
+header{background:var(--brand);color:#fff;position:sticky;top:0;z-index:5}
+.hdr{display:flex;align-items:center;gap:12px;padding:12px 16px;max-width:860px;margin:0 auto}
+.hdr .who{flex:1;min-width:0}
+.hdr .who b{display:block;font-size:17px}
+.hdr .who span{font-size:13px;opacity:.85}
+.icon-btn{min-width:44px;min-height:44px;border-radius:10px;border:1px solid rgba(255,255,255,.35);background:transparent;color:#fff;font-size:14px;padding:0 10px}
+
+/* Stats */
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:14px 0}
+.stat{background:var(--card);border:1.5px solid var(--line);border-radius:12px;padding:10px 6px;text-align:center}
+.stat b{display:block;font-size:22px}
+.stat span{font-size:12px;color:var(--muted)}
+.stat.on{border-color:var(--brand);background:var(--brand-soft)}
+.stat.over b{color:var(--danger)}
+
+/* Tabs & filters */
+.tabs{display:flex;gap:8px;margin-bottom:12px}
+.tab{flex:1;min-height:46px;border-radius:12px;border:1.5px solid var(--line);background:#fff;font-weight:600}
+.tab.on{background:var(--brand);color:#fff;border-color:var(--brand)}
+.filters{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.filters .search{grid-column:1/-1}
+
+/* Cards */
+.list{display:flex;flex-direction:column;gap:10px;padding-bottom:40px}
+.card{background:var(--card);border:1.5px solid var(--line);border-radius:var(--radius);padding:14px;text-align:left;width:100%}
+.card:hover{border-color:#c9c3b6}
+.card .top{display:flex;justify-content:space-between;gap:8px;align-items:center;font-size:13px;color:var(--muted)}
+.card h3{margin:6px 0 4px;font-size:17px}
+.meta{font-size:13px;color:var(--muted);display:flex;flex-wrap:wrap;gap:4px 12px}
+.bar{height:8px;background:#eee9df;border-radius:6px;overflow:hidden;margin-top:10px}
+.bar i{display:block;height:100%;background:var(--brand)}
+.pill{display:inline-block;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:700;white-space:nowrap}
+.s-new{background:#e6f0fa;color:#2b6cb0}
+.s-doing{background:#fdf1dc;color:#9a5b00}
+.s-review{background:#efe7fb;color:#6b3fb0}
+.s-fix{background:#fbe5e2;color:var(--danger)}
+.s-done{background:#e2f3e8;color:var(--ok)}
+.s-cancel{background:#eceae6;color:#777}
+.prio-Cao{color:var(--danger);font-weight:700}
+.due.over{color:var(--danger);font-weight:700}
+.due.soon{color:var(--warn);font-weight:700}
+.empty{text-align:center;color:var(--muted);padding:40px 10px}
+
+/* Bottom sheet */
+#sheet{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:20;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--bg);width:100%;max-width:720px;max-height:92vh;overflow:auto;border-radius:20px 20px 0 0;padding:18px 16px 28px}
+@media(min-width:760px){#sheet{align-items:center}.sheet{border-radius:20px}}
+.sheet-head{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.sheet-head h2{margin:4px 0 0;font-size:20px}
+.box{background:var(--card);border:1.5px solid var(--line);border-radius:var(--radius);padding:14px;margin-top:12px}
+.box h4{margin:0 0 8px;font-size:15px}
+.kv{display:grid;grid-template-columns:110px 1fr;gap:6px 10px;font-size:14px}
+.kv dt{color:var(--muted)}
+.kv dd{margin:0;word-break:break-word}
+.pre{white-space:pre-wrap;font-size:14px}
+.log{font-size:13px;border-left:3px solid var(--line);padding-left:10px;margin:8px 0}
+.log b{font-weight:600}
+details summary{cursor:pointer;font-weight:700;min-height:40px;display:flex;align-items:center}
+input[type=range]{width:100%;height:36px;accent-color:var(--brand)}
+
+/* Toast & busy */
+#toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%);background:#1d2a2b;color:#fff;padding:12px 18px;border-radius:12px;z-index:40;max-width:92vw;font-size:15px}
+#toast.err{background:var(--danger)}
+#toast.ok{background:var(--ok)}
+#busy{position:fixed;inset:0;background:rgba(245,243,238,.6);z-index:30;display:flex;align-items:center;justify-content:center}
+.spin{width:42px;height:42px;border:4px solid var(--brand-soft);border-top-color:var(--brand);border-radius:50%;animation:sp 0.8s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media(max-width:420px){.stat b{font-size:19px}.kv{grid-template-columns:96px 1fr}}
+
+/* Ảnh đính kèm */
+.thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:8px;margin-top:8px}
+.thumb{position:relative;aspect-ratio:1;max-width:100%;padding:0;border-radius:10px;overflow:hidden;background:var(--line);border:1.5px solid var(--line)}
+.thumb img{width:100%;height:100%;object-fit:cover;display:block}
+.thumb .rm{position:absolute;top:4px;right:4px;min-width:34px;min-height:34px;border-radius:50%;border:0;background:rgba(0,0,0,.6);color:#fff;font-size:18px;line-height:1}
+.thumb .sz{position:absolute;left:0;right:0;bottom:0;background:rgba(0,0,0,.55);color:#fff;font-size:11px;padding:2px 6px;text-align:left}
+.file-pick{border-style:dashed;color:var(--muted)}
+.files{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.file-row{display:flex;align-items:center;gap:10px;width:100%;min-height:48px;padding:8px 12px;border:1.5px solid var(--line);border-radius:10px;background:var(--card);text-align:left}
+.file-row .nm{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.file-row .sz2{flex:none;font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.file-row .rm2{flex:none;min-width:40px;min-height:40px;border-radius:50%;border:0;background:transparent;color:var(--danger);font-size:20px}
+#busy{flex-direction:column;gap:14px}
+#busy-text{font-weight:600;text-align:center;max-width:90vw;overflow-wrap:anywhere}
+.hint{font-size:12.5px;color:var(--muted);margin-top:6px}
+#lightbox{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:35;display:flex;align-items:center;justify-content:center;padding:16px}
+#lightbox img{max-width:100%;max-height:100%;border-radius:8px}
+
+/* Dự án */
+.proj{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 0;border-top:1px solid var(--line)}
+.proj:first-child{border-top:0}
+.proj b{display:block}
+.proj small{color:var(--muted)}
+.proj.closed b{color:var(--muted);text-decoration:line-through}
+.proj .btn{flex:none;min-height:42px}
+/* Mật khẩu & Trình ký */
+.pw{display:flex;gap:6px}
+.pw .input{flex:1;min-width:0}
+.pw .eye{flex:none;width:52px;min-height:48px;border-radius:10px;border:1.5px solid var(--line);background:#fff;font-size:18px}
+a.icon-btn{text-decoration:none;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
+#tk-badge:not(:empty){background:var(--accent);color:#fff;border-radius:999px;padding:0 7px;font-weight:800;font-size:12px}
+@media(max-width:420px){.hdr{gap:6px;padding:10px 12px}.icon-btn{padding:0 8px}.lbl{display:none}}
+</style>
+</head>
+<body>
+
+<!-- ĐĂNG NHẬP -->
+<section id="login" class="hidden">
+  <form class="login-card" onsubmit="doLogin(event)">
+    <div class="brand">TẬP ĐOÀN ABG<small>Hệ thống giao việc – Tập đoàn ABG</small></div>
+    <label for="l-email">Email</label>
+    <input id="l-email" class="input" type="email" autocomplete="username" required>
+    <label for="l-pin">Mật khẩu</label>
+    <div class="pw"><input id="l-pin" class="input" type="password" autocomplete="current-password" required><button type="button" class="eye" onclick="eye('l-pin',this)" aria-label="Hiện mật khẩu">👁</button></div>
+    <div class="btn-row"><button class="btn primary block" type="submit">Đăng nhập</button></div>
+    <p style="font-size:13px;color:var(--muted);margin:14px 0 0">Quên mật khẩu? Liên hệ Quản trị viên để được cấp mật khẩu tạm. Lần đầu: đăng nhập bằng mật khẩu tạm Quản trị viên cấp, rồi đặt mật khẩu riêng.</p>
+    <p id="conn-status" style="font-size:12.5px;margin:10px 0 0;color:var(--muted)"></p>
+  </form>
+</section>
+
+<!-- ĐẶT MẬT KHẨU MỚI (đăng nhập bằng mật khẩu tạm) -->
+<section id="setpw" class="hidden" style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:24px 16px">
+  <form class="login-card" onsubmit="doSetPw(event)">
+    <div class="brand">ĐẶT MẬT KHẨU MỚI<small>Bạn vừa đăng nhập bằng mật khẩu tạm. Hãy đặt mật khẩu riêng để tiếp tục.</small></div>
+    <label for="s-new">Mật khẩu mới</label>
+    <div class="pw"><input id="s-new" class="input" type="password" autocomplete="new-password" required><button type="button" class="eye" onclick="eye('s-new',this)" aria-label="Hiện mật khẩu">👁</button></div>
+    <label for="s-new2">Nhập lại mật khẩu mới</label>
+    <div class="pw"><input id="s-new2" class="input" type="password" autocomplete="new-password" required><button type="button" class="eye" onclick="eye('s-new2',this)" aria-label="Hiện mật khẩu">👁</button></div>
+    <p class="hint">Tối thiểu 8 ký tự, có cả chữ và số, không trùng email. Dùng chung cho Giao việc và Trình ký.</p>
+    <div class="btn-row"><button class="btn primary block" type="submit">Lưu mật khẩu &amp; vào ứng dụng</button></div>
+    <div class="btn-row"><button class="btn block" type="button" onclick="doLogout()">Thoát</button></div>
+  </form>
+</section>
+
+<!-- ỨNG DỤNG -->
+<section id="app" class="hidden">
+  <header>
+    <div class="hdr">
+      <div class="who"><b id="u-name"></b><span id="u-role"></span></div>
+      <button class="icon-btn" onclick="load(true)" aria-label="Tải lại">⟳</button>
+      <a class="icon-btn" id="to-tk" href="index.html#trinhky" aria-label="Sang Trình ký">✍<span class="lbl"> Trình ký</span><span id="tk-badge"></span></a>
+      <button class="icon-btn" onclick="openChangePw()" aria-label="Đổi mật khẩu">🔑</button>
+      <button class="icon-btn" onclick="doLogout()">Thoát</button>
+    </div>
+  </header>
+  <main class="wrap">
+    <div class="stats" id="stats"></div>
+    <div class="tabs" id="tabs"></div>
+
+    <div id="view-list">
+      <div class="filters">
+        <input id="f-q" class="input search" placeholder="Tìm theo tên việc, mã, người nhận…" oninput="S.f.q=this.value;renderList()">
+        <select id="f-status" class="input" onchange="S.f.status=this.value;S.f.quick='';render()"></select>
+        <select id="f-project" class="input" onchange="S.f.project=this.value;renderList()" aria-label="Lọc theo dự án"></select>
+        <select id="f-dept" class="input" onchange="S.f.dept=this.value;render()" aria-label="Lọc theo bộ phận"></select>
+        <select id="f-person" class="input" onchange="S.f.person=this.value;renderList()" aria-label="Lọc theo người nhận"></select>
+      </div>
+      <div class="list" id="list"></div>
+    </div>
+
+    <div id="view-new" class="hidden">
+      <form class="box" onsubmit="doCreate(event)" style="margin-bottom:40px">
+        <h4>Giao việc mới</h4>
+        <label for="n-title">Tên công việc *</label>
+        <input id="n-title" class="input" required maxlength="200">
+        <label for="n-project">Dự án *</label>
+        <select id="n-project" class="input" required></select>
+        <label for="n-desc">Mô tả / yêu cầu đầu ra</label>
+        <textarea id="n-desc" class="input" placeholder="Cần làm gì, kết quả bàn giao là gì, tài liệu tham khảo…"></textarea>
+        <label for="n-dept">Bộ phận *</label>
+        <select id="n-dept" class="input" required onchange="onNewDept()"></select>
+        <label for="n-assignee">Người nhận *</label>
+        <select id="n-assignee" class="input" required disabled></select>
+        <div class="hint" id="n-assignee-hint">Chọn bộ phận để hiện danh sách người nhận.</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+          <div><label for="n-prio">Ưu tiên</label><select id="n-prio" class="input"></select></div>
+          <div><label for="n-deadline">Hạn chót *</label><input id="n-deadline" type="date" class="input" required></div>
+        </div>
+        <label for="n-note">Ghi chú cho người nhận</label>
+        <textarea id="n-note" class="input"></textarea>
+        <label for="n-imgs-btn">Ảnh đính kèm</label>
+        <button type="button" id="n-imgs-btn" class="btn block file-pick" onclick="$('n-imgs').click()">＋ Thêm ảnh</button>
+        <input id="n-imgs" type="file" accept="image/*" multiple hidden onchange="pickImgs(this)">
+        <div class="hint" id="n-imgs-hint"></div>
+        <div class="thumbs" id="n-thumbs"></div>
+        <label for="n-pdfs-btn">Tệp PDF</label>
+        <button type="button" id="n-pdfs-btn" class="btn block file-pick" onclick="$('n-pdfs').click()">＋ Thêm tệp PDF</button>
+        <input id="n-pdfs" type="file" accept="application/pdf,.pdf" multiple hidden onchange="pickPdfs(this)">
+        <div class="hint" id="n-pdfs-hint"></div>
+        <div class="files" id="n-pdflist"></div>
+        <div class="btn-row"><button class="btn primary block" type="submit">Giao việc &amp; gửi thông báo</button></div>
+      </form>
+    </div>
+    <div id="view-projects" class="hidden">
+      <form class="box" onsubmit="doAddProject(event)">
+        <h4>Thêm dự án</h4>
+        <label for="p-name">Tên dự án</label>
+        <input id="p-name" class="input" maxlength="100" required placeholder="VD: Hội nghị khách hàng 2026">
+        <div class="btn-row"><button class="btn primary block" type="submit">Thêm dự án</button></div>
+        <p class="hint">Chỉ Quản trị viên thấy mục này và được thêm, đóng, mở lại dự án. Dự án đã đóng không hiện khi giao việc mới; các việc cũ vẫn giữ nguyên.</p>
+      </form>
+      <div class="box" style="margin-bottom:40px"><h4>Danh sách dự án</h4><div id="p-list"></div></div>
+    </div>
+  </main>
+</section>
+
+<!-- CHI TIẾT -->
+<div id="sheet" class="hidden" onclick="if(event.target===this)closeSheet()">
+  <div class="sheet" role="dialog" aria-modal="true" id="sheet-body"></div>
+</div>
+
+<div id="lightbox" class="hidden" onclick="this.classList.add('hidden')"><img id="lightbox-img" alt="Ảnh đính kèm"></div>
+
+<div id="busy" class="hidden"><div class="spin"></div><div id="busy-text" role="status" aria-live="polite"></div></div>
+<div id="toast" class="hidden"></div>
+
+<script>if(!String(window.KV_API_URL||'').trim())document.write('<script src="demo-giaoviec.js?v=202610151711"><\/script>');</script>
+<script>
+const S = { token:null, data:null, view:'list', cur:null, f:{q:'', status:'open', dept:'', person:'', project:'', quick:''}, newImgs:[], newPdfs:[], imgCache:{} };
+const ST_CLASS = {'Mới giao':'s-new','Đang làm':'s-doing','Chờ duyệt':'s-review','Cần sửa':'s-fix','Hoàn thành':'s-done','Hủy':'s-cancel'};
+const OPEN = s => s!=='Hoàn thành' && s!=='Hủy';
+const $ = id => document.getElementById(id);
+
+function esc(s){ return String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function fmt(d){ const m=String(d||'').match(/^(\d{4})-(\d{2})-(\d{2})/); return m?`${m[3]}/${m[2]}/${m[1]}`:''; }
+function store(k,v){ try{ v==null?localStorage.removeItem(k):localStorage.setItem(k,v);}catch(e){} }
+function recall(k){ try{ return localStorage.getItem(k);}catch(e){ return null; } }
+
+// Mở từ link /exec của Apps Script: gọi thẳng bằng google.script.run.
+// Mở từ GitHub Pages: window.KV_API_URL trỏ tới link /exec, gọi qua API (doPost).
+async function call(fn, ...args){
+  if(window.KV_API_URL){
+    let res;
+    try{
+      res=await fetch(window.KV_API_URL,{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify({fn,args})});
+    }catch(e){ throw new Error('Không kết nối được máy chủ Google. Kiểm tra mạng rồi thử lại.'); }
+    let j;
+    try{ j=await res.json(); }catch(e){ throw new Error('Máy chủ trả về dữ liệu lỗi. Kiểm tra lại link API (KV_API_URL) và quyền truy cập "Bất kỳ ai".'); }
+    if(!j.ok) throw new Error(j.error||'Lỗi không xác định');
+    return j.data;
+  }
+  return new Promise((res,rej)=>{ google.script.run.withSuccessHandler(res).withFailureHandler(rej)[fn](...args); });
+}
+function busy(on,text){ $('busy').classList.toggle('hidden',!on); $('busy-text').textContent=on&&text?text:''; }
+let toastTimer;
+function toast(msg,type){
+  const t=$('toast'); t.textContent=msg; t.className=type||''; clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>t.className='hidden',3200);
+}
+function handleErr(e){
+  const msg=(e&&e.message)||String(e);
+  if(msg.indexOf('SESSION_EXPIRED')>-1){ toast('Phiên đăng nhập đã hết, vui lòng đăng nhập lại','err'); return showLogin(); }
+  if(msg.indexOf('MUST_CHANGE_PASSWORD')>-1) return showSetPw();
+  toast(msg.replace(/^Error:\s*/,''),'err');
+}
+
+/* ---------- Đăng nhập ---------- */
+function showLogin(){
+  S.token=null; store('abg_token',null); store('kv_gvcache',null); closeSheet();
+  $('app').classList.add('hidden'); $('setpw').classList.add('hidden'); $('login').classList.remove('hidden');
+  const em=recall('abg_email'); if(em) $('l-email').value=em;
+}
+function showSetPw(){ closeSheet(); $('app').classList.add('hidden'); $('login').classList.add('hidden'); $('setpw').classList.remove('hidden'); $('s-new').value=''; $('s-new2').value=''; }
+function eye(id,btn){ const i=$(id); i.type=i.type==='password'?'text':'password'; btn.textContent=i.type==='password'?'👁':'🙈'; }
+function pwProblem(pw,email){
+  if(pw.length<8) return 'Mật khẩu cần tối thiểu 8 ký tự.';
+  if(!/[A-Za-zÀ-ỹ]/.test(pw)||!/\d/.test(pw)) return 'Mật khẩu cần có cả chữ và số.';
+  const e=String(email||'').toLowerCase(); if(e&&(pw.toLowerCase()===e||pw.toLowerCase()===e.split('@')[0])) return 'Mật khẩu không được trùng email.';
+  return '';
+}
+async function doSetPw(e){
+  e.preventDefault();
+  const a=$('s-new').value.trim(), b=$('s-new2').value.trim();
+  const bad=pwProblem(a, recall('abg_email')); if(bad) return toast(bad,'err');
+  if(a!==b) return toast('Hai lần nhập mật khẩu không khớp','err');
+  busy(true);
+  try{ await call('changePassword', S.token, '', a); $('setpw').classList.add('hidden'); toast('Đã đặt mật khẩu mới','ok'); await load(); }
+  catch(err){ handleErr(err); } finally{ busy(false); }
+}
+function openChangePw(){
+  S.cur=null;
+  $('sheet-body').innerHTML=`<div class="sheet-head"><h2>🔑 Đổi mật khẩu</h2><button class="btn" onclick="closeSheet()" aria-label="Đóng">✕</button></div>
+    <form class="box" onsubmit="doChangePw(event)">
+      <label for="c-old">Mật khẩu hiện tại</label>
+      <div class="pw"><input id="c-old" class="input" type="password" autocomplete="current-password" required><button type="button" class="eye" onclick="eye('c-old',this)" aria-label="Hiện mật khẩu">👁</button></div>
+      <label for="c-new">Mật khẩu mới</label>
+      <div class="pw"><input id="c-new" class="input" type="password" autocomplete="new-password" required><button type="button" class="eye" onclick="eye('c-new',this)" aria-label="Hiện mật khẩu">👁</button></div>
+      <label for="c-new2">Nhập lại mật khẩu mới</label>
+      <div class="pw"><input id="c-new2" class="input" type="password" autocomplete="new-password" required><button type="button" class="eye" onclick="eye('c-new2',this)" aria-label="Hiện mật khẩu">👁</button></div>
+      <p class="hint">Tối thiểu 8 ký tự, có chữ và số. Dùng chung cho Giao việc và Trình ký.</p>
+      <div class="btn-row"><button class="btn primary block" type="submit">Lưu mật khẩu mới</button></div>
+    </form>`;
+  $('sheet').classList.remove('hidden'); document.body.style.overflow='hidden';
+}
+async function doChangePw(e){
+  e.preventDefault();
+  const a=$('c-new').value.trim(), b=$('c-new2').value.trim();
+  const bad=pwProblem(a, S.data.user.email); if(bad) return toast(bad,'err');
+  if(a!==b) return toast('Hai lần nhập mật khẩu không khớp','err');
+  busy(true);
+  try{ await call('changePassword', S.token, $('c-old').value, a); closeSheet(); toast('Đã đổi mật khẩu','ok'); }
+  catch(err){ handleErr(err); } finally{ busy(false); }
+}
+async function doLogin(e){
+  e.preventDefault(); busy(true);
+  try{
+    const email=$('l-email').value.trim();
+    const r=await call('login', email, $('l-pin').value);
+    S.token=r.token; store('abg_token',r.token); store('abg_email',email);
+    $('l-pin').value='';
+    if(r.mustChange) return showSetPw();
+    await load();
+  }catch(err){ handleErr(err); } finally{ busy(false); }
+}
+async function doLogout(){ const t=S.token; showLogin(); if(t) call('logout',t).catch(()=>{}); }
+
+async function load(manual){
+  if(manual) busy(true);
+  try{
+    S.data=await call('getData', S.token);
+    store('kv_gvcache', JSON.stringify({token:S.token, data:S.data}));
+    $('login').classList.add('hidden'); $('setpw').classList.add('hidden'); $('app').classList.remove('hidden');
+    render();
+    // Nút sang Trình ký + số tờ chờ mình ký
+    $('to-tk').href = window.KV_API_URL||window.KV_DEMO ? 'index.html#trinhky' : (S.data.appUrl ? S.data.appUrl+'?app=trinhky' : 'index.html#trinhky');
+    call('tkApi','bootstrap',S.token,[]).then(b=>{ $('tk-badge').textContent=b.counts.toSign||''; tellShell({tk:b.counts.toSign}); }).catch(()=>{});
+    if(manual) toast('Đã cập nhật dữ liệu mới nhất');
+  }catch(err){ handleErr(err); } finally{ if(manual) busy(false); }
+}
+
+/* ---------- Hiển thị ---------- */
+function daysLeft(d){ if(!d) return null; return Math.round((new Date(d+'T12:00:00')-new Date(S.data.today+'T12:00:00'))/864e5); }
+function dueHtml(t){
+  if(!t.deadline) return '';
+  const n=daysLeft(t.deadline);
+  if(!OPEN(t.status)) return `Hạn ${fmt(t.deadline)}`;
+  if(n<0) return `<span class="due over">Quá hạn ${-n} ngày</span>`;
+  if(n===0) return `<span class="due soon">Hạn hôm nay</span>`;
+  if(n<=2) return `<span class="due soon">Còn ${n} ngày (${fmt(t.deadline)})</span>`;
+  return `Hạn ${fmt(t.deadline)}`;
+}
+const isOver = t => OPEN(t.status) && t.deadline && daysLeft(t.deadline)<0;
+
+function render(){
+  const d=S.data, u=d.user;
+  $('u-name').textContent=u.name;
+  $('u-role').textContent=u.role+(u.dept?' · '+u.dept:'');
+
+  const cnt=s=>d.tasks.filter(t=>t.status===s).length;
+  const stats=[['Mới giao',cnt('Mới giao'),''],['Đang làm',cnt('Đang làm')+cnt('Cần sửa'),''],['Chờ duyệt',cnt('Chờ duyệt'),''],['Quá hạn',d.tasks.filter(isOver).length,'over']];
+  $('stats').innerHTML=stats.map(([k,v,c])=>`<button class="stat ${c} ${S.f.quick===k?'on':''}" onclick="quick('${k}')"><b>${v}</b><span>${k}</span></button>`).join('');
+
+  if(!u.isManager && S.view!=='list') S.view='list';
+  if(!u.isAdmin && S.view==='projects') S.view='list';
+  $('tabs').innerHTML = u.isManager
+    ? `<button class="tab ${S.view==='list'?'on':''}" onclick="go('list')">Danh sách việc</button><button class="tab ${S.view==='new'?'on':''}" onclick="go('new')">+ Giao việc</button>`
+      + (u.isAdmin?`<button class="tab ${S.view==='projects'?'on':''}" onclick="go('projects')">Dự án</button>`:'')
+    : '';
+  $('view-list').classList.toggle('hidden',S.view!=='list');
+  $('view-new').classList.toggle('hidden',S.view!=='new');
+  $('view-projects').classList.toggle('hidden',S.view!=='projects');
+
+  const projNames=[...new Set(d.projects.concat(d.tasks.map(t=>t.project).filter(Boolean)))];
+  if(S.f.project && projNames.indexOf(S.f.project)<0) S.f.project='';
+  $('f-project').innerHTML='<option value="">Mọi dự án</option>'+projNames.map(p=>`<option ${S.f.project===p?'selected':''}>${esc(p)}</option>`).join('');
+
+  $('f-status').innerHTML=[['open','Đang mở'],['all','Tất cả']].concat(d.statuses.map(s=>[s,s]))
+    .map(([v,l])=>`<option value="${esc(v)}" ${S.f.status===v?'selected':''}>${esc(l)}</option>`).join('');
+  const fp=$('f-person'), fd=$('f-dept');
+  if(u.isManager){
+    fp.classList.remove('hidden'); fd.classList.remove('hidden');
+    const depts=deptList(d.tasks.map(t=>t.dept));
+    if(S.f.dept && depts.indexOf(S.f.dept)<0) S.f.dept='';
+    fd.innerHTML='<option value="">Mọi bộ phận</option>'+depts.map(x=>`<option ${S.f.dept===x?'selected':''}>${esc(x)}</option>`).join('');
+    const people=d.staff.filter(s=>!S.f.dept||deptOf(s)===S.f.dept);
+    if(S.f.person && !people.some(s=>s.email===S.f.person)) S.f.person='';
+    fp.innerHTML=`<option value="">${S.f.dept?'Mọi người trong bộ phận':'Mọi người'}</option>`+people.map(s=>`<option value="${esc(s.email)}" ${S.f.person===s.email?'selected':''}>${esc(s.name)}</option>`).join('');
+  } else { fp.classList.add('hidden'); fd.classList.add('hidden'); }
+
+  if(u.isManager) fillNewForm();
+  if(u.isAdmin) renderProjects();
+  renderList();
+}
+
+function quick(k){ S.f.quick = S.f.quick===k ? '' : k; S.view='list'; render(); }
+function go(v){ S.view=v; render(); window.scrollTo(0,0); }
+
+function filtered(){
+  const f=S.f, q=f.q.trim().toLowerCase();
+  return S.data.tasks.filter(t=>{
+    if(f.quick){
+      if(f.quick==='Quá hạn'){ if(!isOver(t)) return false; }
+      else if(f.quick==='Đang làm'){ if(t.status!=='Đang làm'&&t.status!=='Cần sửa') return false; }
+      else if(t.status!==f.quick) return false;
+    } else if(f.status==='open'){ if(!OPEN(t.status)) return false; }
+    else if(f.status!=='all' && t.status!==f.status) return false;
+    if(f.dept && deptOf(t)!==f.dept) return false;
+    if(f.person && String(t.assigneeEmail).toLowerCase()!==f.person) return false;
+    if(f.project && t.project!==f.project) return false;
+    if(q && ![t.id,t.title,t.assigneeName,t.project,t.dept].join(' ').toLowerCase().includes(q)) return false;
+    return true;
+  }).sort((a,b)=>{
+    const oa=OPEN(a.status)?0:1, ob=OPEN(b.status)?0:1;
+    if(oa!==ob) return oa-ob;
+    return String(a.deadline||'9999').localeCompare(String(b.deadline||'9999'));
+  });
+}
+
+function renderList(){
+  const u=S.data.user, items=filtered();
+  if(!items.length){ $('list').innerHTML=`<div class="empty">Không có công việc nào ${S.f.quick||S.f.status!=='open'?'khớp bộ lọc':'đang mở'}.</div>`; return; }
+  $('list').innerHTML=items.map(t=>`
+    <button class="card" onclick="openDetail('${esc(t.id)}')">
+      <div class="top"><span>${esc(t.id)}${t.priority?` · <span class="prio-${esc(t.priority)}">${esc(t.priority)}</span>`:''}</span><span class="pill ${ST_CLASS[t.status]||''}">${esc(t.status)}</span></div>
+      <h3>${esc(t.title)}</h3>
+      <div class="meta">
+        ${u.isManager?`<span>👤 ${esc(t.assigneeName)} · ${esc(deptOf(t))}</span>`:`<span>Giao bởi ${esc(t.assignerName)}</span>`}
+        <span>${dueHtml(t)}</span>
+        ${t.project?`<span>📁 ${esc(t.project)}</span>`:''}
+        ${t.imageIds&&t.imageIds.length?`<span>🖼 ${t.imageIds.length} ảnh</span>`:''}
+        ${t.pdfs&&t.pdfs.length?`<span>📄 ${t.pdfs.length} PDF</span>`:''}
+      </div>
+      <div class="bar" aria-label="Tiến độ ${t.progress}%"><i style="width:${Number(t.progress)||0}%"></i></div>
+    </button>`).join('');
+}
+
+/* ---------- Bộ phận ---------- */
+const NO_DEPT='Chưa xếp bộ phận';
+const deptOf = x => (x && String(x.dept||'').trim()) || NO_DEPT;
+function deptList(extra){
+  const all=S.data.staff.map(deptOf).concat(extra||[]).filter(Boolean);
+  return [...new Set(all)].sort((a,b)=>a===NO_DEPT?1:b===NO_DEPT?-1:a.localeCompare(b,'vi'));
+}
+function staffOptions(dept, selected, placeholder){
+  return `<option value="">${placeholder}</option>`+S.data.staff.filter(s=>deptOf(s)===dept)
+    .map(s=>`<option value="${esc(s.email)}" ${s.email===selected?'selected':''}>${esc(s.name)}</option>`).join('');
+}
+function onNewDept(){
+  const dep=$('n-dept').value, sel=$('n-assignee'), keep=sel.value;
+  if(!dep){
+    sel.innerHTML='<option value="">— Chọn bộ phận trước —</option>'; sel.disabled=true;
+    $('n-assignee-hint').textContent='Chọn bộ phận để hiện danh sách người nhận.'; return;
+  }
+  const n=S.data.staff.filter(s=>deptOf(s)===dep).length;
+  sel.disabled=false; sel.innerHTML=staffOptions(dep, keep, '— Chọn người nhận —');
+  $('n-assignee-hint').textContent=`${dep}: ${n} người`;
+}
+function onEditDept(){
+  const t=cur(); if(!t) return;
+  $('e-assignee').innerHTML=staffOptions($('e-dept').value, String(t.assigneeEmail).toLowerCase(), '— Chọn người nhận —');
+}
+
+function fillNewForm(){
+  const d=S.data;
+  const curProj=$('n-project').value;
+  $('n-project').innerHTML='<option value="">— Chọn dự án —</option>'+d.projects.map(p=>`<option ${p===curProj?'selected':''}>${esc(p)}</option>`).join('');
+  const curDept=$('n-dept').value;
+  $('n-dept').innerHTML='<option value="">— Chọn bộ phận —</option>'+deptList().map(x=>`<option ${x===curDept?'selected':''}>${esc(x)}</option>`).join('');
+  onNewDept();
+  renderThumbs(); renderPdfs();
+  if(S.formInit) return; S.formInit=true;
+  $('n-prio').innerHTML=d.priorities.map(p=>`<option ${p==='Trung bình'?'selected':''}>${esc(p)}</option>`).join('');
+  const dl=new Date(d.today+'T12:00:00'); dl.setDate(dl.getDate()+3);
+  $('n-deadline').value=dl.toISOString().slice(0,10);
+}
+
+async function doCreate(e){
+  e.preventDefault();
+  try{
+    const ids=await uploadAll();
+    busy(true,'Đang lưu công việc…');
+    S.data=await call('createTask', S.token, {
+      title:$('n-title').value, desc:$('n-desc').value, dept:$('n-dept').value, assigneeEmail:$('n-assignee').value,
+      project:$('n-project').value, priority:$('n-prio').value, deadline:$('n-deadline').value, note:$('n-note').value,
+      attachments:ids
+    });
+    ['n-title','n-desc','n-note'].forEach(id=>$(id).value='');
+    clearAttachments();
+    S.view='list'; S.f.quick=''; render(); toast('Đã giao việc và gửi thông báo','ok');
+  }catch(err){ handleErr(err); } finally{ busy(false); }
+}
+
+/* ---------- Tệp đính kèm: ảnh & PDF ---------- */
+const LIM = () => Object.assign({maxImgMB:5,maxImgs:5,maxPdfMB:10,maxPdfs:5},(S.data&&S.data.limits)||{});
+function readAsDataURL(f){ return new Promise((res,rej)=>{ const r=new FileReader(); r.onload=()=>res(r.result); r.onerror=rej; r.readAsDataURL(f); }); }
+function shrink(url){ // chỉ dùng ở bản thử nghiệm để tiết kiệm bộ nhớ trình duyệt
+  return new Promise((res,rej)=>{ const im=new Image(); im.onload=()=>{
+    const k=Math.min(1,1280/Math.max(im.width,im.height)), c=document.createElement('canvas');
+    c.width=Math.round(im.width*k); c.height=Math.round(im.height*k);
+    c.getContext('2d').drawImage(im,0,0,c.width,c.height); res(c.toDataURL('image/jpeg',0.8)); }; im.onerror=rej; im.src=url; });
+}
+const mb = b => (b/1048576).toFixed(b<1048576?2:1)+'MB';
+const isPdfFile = f => f.type==='application/pdf' || /\.pdf$/i.test(f.name);
+
+function pickImgs(inp){
+  const L=LIM(), max=L.maxImgMB*1048576, files=[...inp.files], errs=[];
+  inp.value='';
+  for(const f of files){
+    if(S.newImgs.length>=L.maxImgs){ errs.push(`Tối đa ${L.maxImgs} ảnh`); break; }
+    if(!/^image\//.test(f.type)){ errs.push(`"${f.name}" không phải ảnh`); continue; }
+    if(f.size>max){ errs.push(`"${f.name}" nặng ${mb(f.size)}, vượt giới hạn ${L.maxImgMB}MB`); continue; }
+    S.newImgs.push({file:f,name:f.name,size:f.size,type:f.type,preview:URL.createObjectURL(f)});
+  }
+  renderThumbs();
+  if(errs.length) toast(errs.join(' · '),'err');
+}
+function pickPdfs(inp){
+  const L=LIM(), max=L.maxPdfMB*1048576, files=[...inp.files], errs=[];
+  inp.value='';
+  for(const f of files){
+    if(S.newPdfs.length>=L.maxPdfs){ errs.push(`Tối đa ${L.maxPdfs} tệp PDF`); break; }
+    if(!isPdfFile(f)){ errs.push(`"${f.name}" không phải tệp PDF`); continue; }
+    if(f.size>max){ errs.push(`"${f.name}" nặng ${mb(f.size)}, vượt giới hạn ${L.maxPdfMB}MB`); continue; }
+    S.newPdfs.push({file:f,name:f.name,size:f.size,type:'application/pdf'});
+  }
+  renderPdfs();
+  if(errs.length) toast(errs.join(' · '),'err');
+}
+function removeImg(i){ const x=S.newImgs.splice(i,1)[0]; if(x) URL.revokeObjectURL(x.preview); renderThumbs(); }
+function removePdf(i){ S.newPdfs.splice(i,1); renderPdfs(); }
+function clearAttachments(){ S.newImgs.forEach(x=>URL.revokeObjectURL(x.preview)); S.newImgs=[]; S.newPdfs=[]; renderThumbs(); renderPdfs(); }
+function renderThumbs(){
+  const L=LIM();
+  $('n-imgs-hint').textContent=`${S.newImgs.length}/${L.maxImgs} ảnh · mỗi ảnh tối đa ${L.maxImgMB}MB`;
+  $('n-imgs-btn').disabled=S.newImgs.length>=L.maxImgs;
+  $('n-thumbs').innerHTML=S.newImgs.map((im,i)=>`<div class="thumb"><img src="${im.preview}" alt="${esc(im.name)}"><button type="button" class="rm" onclick="removeImg(${i})" aria-label="Bỏ ảnh ${esc(im.name)}">×</button><span class="sz">${mb(im.size)}</span></div>`).join('');
+}
+function renderPdfs(){
+  const L=LIM();
+  $('n-pdfs-hint').textContent=`${S.newPdfs.length}/${L.maxPdfs} tệp · mỗi tệp tối đa ${L.maxPdfMB}MB`;
+  $('n-pdfs-btn').disabled=S.newPdfs.length>=L.maxPdfs;
+  $('n-pdflist').innerHTML=S.newPdfs.map((f,i)=>`<div class="file-row"><span aria-hidden="true">📄</span><span class="nm">${esc(f.name)}</span><span class="sz2">${mb(f.size)}</span><button type="button" class="rm2" onclick="removePdf(${i})" aria-label="Bỏ tệp ${esc(f.name)}">×</button></div>`).join('');
+}
+// Tải từng tệp lên trước, rồi mới lưu công việc. Tệp đã tải xong không tải lại khi bấm giao việc lần nữa.
+async function uploadAll(){
+  const items=S.newImgs.map(x=>({ref:x,kind:'img'})).concat(S.newPdfs.map(x=>({ref:x,kind:'pdf'})));
+  const ids=[];
+  for(let i=0;i<items.length;i++){
+    const {ref,kind}=items[i];
+    if(ref.upId){ ids.push(ref.upId); continue; }
+    busy(true,`Đang tải lên ${i+1}/${items.length}: ${ref.name} (${mb(ref.size)})`);
+    let type=ref.type, data='';
+    if(kind==='pdf' && window.KV_DEMO_SHRINK){ data=''; } // bản thử nghiệm không lưu nội dung PDF
+    else{
+      let url=await readAsDataURL(ref.file);
+      if(kind==='img' && window.KV_DEMO_SHRINK){ url=await shrink(url); type='image/jpeg'; }
+      data=url.slice(url.indexOf(',')+1);
+    }
+    const r=await call('uploadFile',S.token,{name:ref.name,mimeType:type,size:ref.size,data});
+    ref.upId=r.id; ids.push(r.id);
+  }
+  return ids;
+}
+
+function showLightbox(src){ $('lightbox-img').src=src; $('lightbox').classList.remove('hidden'); }
+async function zoom(taskId,fid){
+  if(S.imgCache['full_'+fid]) return showLightbox(S.imgCache['full_'+fid]);
+  busy(true,'Đang mở ảnh…');
+  try{ const src=await call('getImage',S.token,taskId,fid,false); S.imgCache['full_'+fid]=src; showLightbox(src); }
+  catch(err){ handleErr(err); } finally{ busy(false); }
+}
+function loadImages(t){
+  (t.imageIds||[]).forEach((fid,i)=>{
+    const show=src=>{ const el=$('img-'+i); if(el&&S.cur===t.id) el.innerHTML=`<img src="${src}" alt="Ảnh ${i+1}">`; };
+    if(S.imgCache['th_'+fid]) return show(S.imgCache['th_'+fid]);
+    call('getImage',S.token,t.id,fid,true).then(src=>{ S.imgCache['th_'+fid]=src; show(src); })
+      .catch(()=>{ const el=$('img-'+i); if(el) el.innerHTML='<span class="sz">Không tải được</span>'; });
+  });
+}
+async function openPdf(fid){
+  const t=cur(); if(!t) return;
+  const meta=(t.pdfs||[]).find(p=>p.id===fid);
+  busy(true,`Đang tải ${meta?meta.name:'tệp PDF'}…`);
+  try{
+    const f=await call('getFile',S.token,t.id,fid);
+    const bin=atob(f.data), arr=new Uint8Array(bin.length);
+    for(let i=0;i<bin.length;i++) arr[i]=bin.charCodeAt(i);
+    const url=URL.createObjectURL(new Blob([arr],{type:'application/pdf'}));
+    const a=document.createElement('a'); a.href=url; a.download=f.name; a.rel='noopener';
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),60000);
+    toast('Đã tải xuống '+f.name,'ok');
+  }catch(err){ handleErr(err); } finally{ busy(false); }
+}
+
+/* ---------- Dự án (Admin) ---------- */
+function renderProjects(){
+  const all=S.data.allProjects||[];
+  const open=name=>S.data.tasks.filter(t=>t.project===name&&OPEN(t.status)).length;
+  $('p-list').innerHTML = all.length ? all.map(p=>`
+    <div class="proj ${p.status==='Đã đóng'?'closed':''}">
+      <div style="min-width:0"><b>${esc(p.name)}</b><small>${esc(p.status)} · ${open(p.name)} việc đang mở${p.createdBy?' · tạo bởi '+esc(p.createdBy):''}</small></div>
+      <button class="btn" data-name="${esc(p.name)}" onclick="toggleProject(this.dataset.name)">${p.status==='Đã đóng'?'Mở lại':'Đóng'}</button>
+    </div>`).join('') : '<div class="empty">Chưa có dự án nào. Thêm dự án đầu tiên ở trên.</div>';
+}
+async function doAddProject(e){
+  e.preventDefault(); busy(true);
+  try{ S.data=await call('addProject',S.token,$('p-name').value); $('p-name').value=''; render(); toast('Đã thêm dự án','ok'); }
+  catch(err){ handleErr(err); } finally{ busy(false); }
+}
+async function toggleProject(name){
+  const p=(S.data.allProjects||[]).find(x=>x.name===name); if(!p) return;
+  const next=p.status==='Đã đóng'?'Đang chạy':'Đã đóng';
+  busy(true);
+  try{ S.data=await call('setProjectStatus',S.token,name,next); render(); toast(next==='Đã đóng'?'Đã đóng dự án':'Đã mở lại dự án','ok'); }
+  catch(err){ handleErr(err); } finally{ busy(false); }
+}
+
+/* ---------- Chi tiết & thao tác ---------- */
+const cur = () => S.data.tasks.find(t=>t.id===S.cur);
+
+function openDetail(id){
+  S.cur=id; const t=cur(); if(!t) return closeSheet();
+  const u=S.data.user, mine=String(t.assigneeEmail).toLowerCase()===u.email;
+  const working = mine && (t.status==='Đang làm'||t.status==='Cần sửa');
+  let h=`
+    <div class="sheet-head">
+      <div><span class="pill ${ST_CLASS[t.status]||''}">${esc(t.status)}</span><h2>${esc(t.title)}</h2></div>
+      <button class="btn" onclick="closeSheet()" aria-label="Đóng">✕</button>
+    </div>
+    <div class="box"><dl class="kv">
+      <dt>Mã việc</dt><dd>${esc(t.id)}</dd>
+      <dt>Người nhận</dt><dd>${esc(t.assigneeName)}</dd>
+      <dt>Bộ phận</dt><dd>${esc(deptOf(t))}</dd>
+      <dt>Người giao</dt><dd>${esc(t.assignerName)}</dd>
+      <dt>Ngày giao</dt><dd>${fmt(t.assignedDate)}</dd>
+      <dt>Hạn chót</dt><dd>${dueHtml(t)}</dd>
+      <dt>Ưu tiên</dt><dd class="prio-${esc(t.priority)}">${esc(t.priority)}</dd>
+      <dt>Dự án</dt><dd>${esc(t.project||'—')}</dd>
+      <dt>Tiến độ</dt><dd>${t.progress}%</dd>
+      ${t.resultLink?`<dt>Kết quả</dt><dd><a href="${esc(t.resultLink)}" target="_blank" rel="noopener">${esc(t.resultLink)}</a></dd>`:''}
+    </dl>
+    ${t.desc?`<h4 style="margin-top:12px">Mô tả</h4><div class="pre">${esc(t.desc)}</div>`:''}
+    ${t.note?`<h4 style="margin-top:12px">Ghi chú / phản hồi</h4><div class="pre">${esc(t.note)}</div>`:''}
+    </div>`;
+  if(t.imageIds&&t.imageIds.length)
+    h+=`<div class="box"><h4>Ảnh đính kèm (${t.imageIds.length})</h4><div class="thumbs">${t.imageIds.map((fid,i)=>`<button type="button" class="thumb" id="img-${i}" onclick="zoom('${esc(t.id)}','${esc(fid)}')" aria-label="Phóng to ảnh ${i+1}"><span class="sz">Đang tải…</span></button>`).join('')}</div></div>`;
+  if(t.pdfs&&t.pdfs.length)
+    h+=`<div class="box"><h4>Tệp PDF (${t.pdfs.length})</h4><div class="files">${t.pdfs.map(f=>`<button type="button" class="file-row" data-id="${esc(f.id)}" onclick="openPdf(this.dataset.id)" aria-label="Tải xuống ${esc(f.name)}"><span aria-hidden="true">📄</span><span class="nm">${esc(f.name)}</span><span class="sz2">${f.size?mb(f.size):''} ⬇</span></button>`).join('')}</div></div>`;
+
+  if(mine && t.status==='Mới giao')
+    h+=`<div class="btn-row"><button class="btn accent block" onclick="act('start')">▶ Nhận việc – Bắt đầu làm</button></div>`;
+
+  if(OPEN(t.status)){
+    h+=`<div class="box"><h4>Cập nhật</h4>`;
+    if(working){
+      h+=`<label for="d-prog">Tiến độ: <span id="d-prog-v">${t.progress}</span>%</label>
+          <input id="d-prog" type="range" min="0" max="100" step="10" value="${t.progress}" oninput="$('d-prog-v').textContent=this.value">
+          <label for="d-link">Link kết quả (Google Drive, Canva, Facebook…)</label>
+          <input id="d-link" class="input" type="url" placeholder="https://" value="${esc(t.resultLink)}">`;
+    }
+    h+=`<label for="d-note">Ghi chú ${u.isManager&&t.status==='Chờ duyệt'?'/ nhận xét':''}</label>
+        <textarea id="d-note" class="input" placeholder="${t.status==='Chờ duyệt'&&u.isManager?'Nhận xét, hoặc ghi rõ cần sửa gì…':'Báo cáo nhanh, khó khăn cần hỗ trợ…'}"></textarea>
+        <div class="btn-row">
+          <button class="btn" onclick="act('save')">Lưu cập nhật</button>
+          ${working?`<button class="btn primary" onclick="act('submit')">Nộp để duyệt ➜</button>`:''}
+        </div>`;
+    if(u.isManager && t.status==='Chờ duyệt')
+      h+=`<div class="btn-row"><button class="btn ok" onclick="act('approve')">✓ Duyệt – Hoàn thành</button><button class="btn danger" onclick="act('fix')">↺ Yêu cầu sửa</button></div>`;
+    h+=`</div>`;
+  }
+
+  if(u.isManager){
+    const d=S.data;
+    h+=`<details class="box"><summary>Chỉnh sửa / giao lại</summary>
+      <label for="e-title">Tên công việc</label><input id="e-title" class="input" value="${esc(t.title)}">
+      <label for="e-desc">Mô tả</label><textarea id="e-desc" class="input">${esc(t.desc)}</textarea>
+      <label for="e-dept">Bộ phận</label>
+      <select id="e-dept" class="input" onchange="onEditDept()">${deptList([deptOf(t)]).map(x=>`<option ${x===deptOf(t)?'selected':''}>${esc(x)}</option>`).join('')}</select>
+      <label for="e-assignee">Người nhận</label>
+      <select id="e-assignee" class="input">${staffOptions(deptOf(t), String(t.assigneeEmail).toLowerCase(), '— Chọn người nhận —')}</select>
+      <label for="e-project">Dự án *</label>
+      <select id="e-project" class="input">${(d.projects.indexOf(t.project)<0&&t.project?[t.project]:[]).concat(d.projects).map(p=>`<option ${p===t.project?'selected':''}>${esc(p)}</option>`).join('')}</select>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div><label for="e-prio">Ưu tiên</label><select id="e-prio" class="input">${d.priorities.map(p=>`<option ${p===t.priority?'selected':''}>${esc(p)}</option>`).join('')}</select></div>
+        <div><label for="e-deadline">Hạn chót</label><input id="e-deadline" type="date" class="input" value="${esc(t.deadline)}"></div>
+      </div>
+      <div class="btn-row">
+        <button class="btn primary" onclick="act('edit')">Lưu thay đổi</button>
+        ${OPEN(t.status)?`<button class="btn danger" onclick="act('cancel')">Hủy việc</button>`:`<button class="btn" onclick="act('reopen')">Mở lại việc</button>`}
+      </div>
+    </details>`;
+  }
+
+  h+=`<div class="box"><h4>Lịch sử</h4><div id="d-log" style="color:var(--muted);font-size:13px">Đang tải…</div></div>`;
+  $('sheet-body').innerHTML=h;
+  $('sheet').classList.remove('hidden');
+  document.body.style.overflow='hidden';
+
+  loadImages(t);
+  call('getLog', S.token, id).then(rows=>{
+    if(S.cur!==id || !$('d-log')) return;
+    $('d-log').innerHTML = rows.length ? rows.map(r=>`<div class="log"><b>${esc(r.action)}</b> · ${esc(r.by)} · ${esc(r.time)}<br>${esc(r.detail)}</div>`).join('') : 'Chưa có lịch sử.';
+  }).catch(()=>{ if($('d-log')) $('d-log').textContent='Không tải được lịch sử.'; });
+}
+
+function closeSheet(){ S.cur=null; $('sheet').classList.add('hidden'); document.body.style.overflow=''; }
+
+async function act(kind){
+  const t=cur(); if(!t) return;
+  const ch={};
+  const note=$('d-note')?$('d-note').value.trim():'';
+  if($('d-prog')) ch.progress=Number($('d-prog').value);
+  if($('d-link')) ch.resultLink=$('d-link').value.trim();
+  if(note) ch.note=note;
+  switch(kind){
+    case 'start': ch.status='Đang làm'; break;
+    case 'submit':
+      if(!ch.resultLink && !note) return toast('Hãy dán link kết quả hoặc ghi chú trước khi nộp','err');
+      ch.status='Chờ duyệt'; break;
+    case 'approve': ch.status='Hoàn thành'; break;
+    case 'fix':
+      if(!note) return toast('Hãy ghi rõ cần sửa gì vào ô ghi chú','err');
+      ch.status='Cần sửa'; break;
+    case 'cancel': if(!confirm('Hủy công việc này?')) return; ch.status='Hủy'; break;
+    case 'reopen': ch.status='Đang làm'; break;
+    case 'edit':
+      if(!$('e-assignee').value) return toast('Hãy chọn người nhận trong bộ phận','err');
+      Object.assign(ch,{ title:$('e-title').value, desc:$('e-desc').value, assigneeEmail:$('e-assignee').value,
+        project:$('e-project').value, priority:$('e-prio').value, deadline:$('e-deadline').value });
+      break;
+  }
+  busy(true);
+  try{
+    S.data=await call('updateTask', S.token, t.id, ch);
+    render();
+    const still=S.data.tasks.find(x=>x.id===t.id);
+    still ? openDetail(t.id) : closeSheet();
+    toast({start:'Đã nhận việc',submit:'Đã nộp – chờ quản lý duyệt',approve:'Đã duyệt hoàn thành',fix:'Đã gửi yêu cầu sửa',cancel:'Đã hủy việc',reopen:'Đã mở lại việc'}[kind]||'Đã lưu','ok');
+  }catch(err){ handleErr(err); } finally{ busy(false); }
+}
+
+document.addEventListener('keydown',e=>{ if(e.key!=='Escape') return; if(!$('lightbox').classList.contains('hidden')) return $('lightbox').classList.add('hidden'); if(S.cur) closeSheet(); });
+
+/* ---------- Chạy trong trang gộp (index.html có 2 nút: Giao việc | Trình ký) ---------- */
+window.KV_EMBED=(function(){ try{ return window.parent!==window && !!window.parent.KV_SHELL; }catch(e){ return false; } })();
+function tellShell(m){ if(window.KV_EMBED) try{ window.parent.postMessage(Object.assign({kv:1},m), location.origin); }catch(e){} }
+// Trang gộp gọi khi chuyển sang tab này: dùng chung đăng nhập với Trình ký
+window.kvOnShow=function(){ const t=recall('abg_token'); if(t&&t!==S.token){ S.token=t; busy(true); load().finally(()=>busy(false)); } else if(!t&&S.token) showLogin(); };
+
+/* ---------- Khởi động ---------- */
+(function init(){
+  if(window.KV_EMBED) $('to-tk').classList.add('hidden');
+  // Trạng thái kết nối, để biết trang đang chạy thật hay chạy thử
+  window.KV_API_URL=String(window.KV_API_URL||'').trim();
+  const cs=$('conn-status');
+  if(window.KV_API_URL){
+    if(/^https:\/\/script\.google\.com\/.+\/exec$/.test(window.KV_API_URL)) cs.innerHTML='<span style="color:var(--ok)">●</span> Đã kết nối Google Sheet';
+    else cs.innerHTML='<span style="color:var(--danger)">●</span> Link API không đúng dạng. Link phải bắt đầu bằng https://script.google.com/ và kết thúc bằng /exec';
+  } else if(!window.KV_DEMO) cs.innerHTML='<span style="color:var(--ok)">●</span> Đang chạy trên Google Apps Script';
+  if(window.KV_BUILD) cs.innerHTML+=(cs.innerHTML?' · ':'')+'Phiên bản '+window.KV_BUILD;
+  S.token=recall('abg_token');
+  // Hiện ngay dữ liệu lần trước, rồi cập nhật từ máy chủ (không che màn hình chờ)
+  let cached=null; try{ cached=JSON.parse(recall('kv_gvcache')||'null'); }catch(e){}
+  if(S.token && cached && cached.token===S.token && cached.data){
+    S.data=cached.data; $('login').classList.add('hidden'); $('app').classList.remove('hidden'); render(); load();
+  }
+  else if(S.token){ busy(true); load().finally(()=>busy(false)); }
+  else showLogin();
+})();
+</script>
+</body>
+</html>
